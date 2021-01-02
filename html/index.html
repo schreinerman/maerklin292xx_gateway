@@ -1,0 +1,94 @@
+<html>
+<head>
+    <!-- meta http-equiv='refresh' content='5'/-->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Maerklin IR Remote</title>
+    <script>
+    function execcmd(cmd) {
+        fetch('/cmd/' + cmd);
+    }
+    function requestFullScreen() {
+        const _element = document.documentElement;
+        if (_element.requestFullscreen) {
+           _element.requestFullscreen();
+        } else {
+        if (_element.mozRequestFullScreen) {
+           _element.mozRequestFullScreen();
+        } else {
+           if (_element.webkitRequestFullscreen) {
+              _element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+           }
+        }
+      }
+    }
+    function blockMove() {
+          event.preventDefault() ;
+    }
+    window.setTimeout(function() {
+        requestFullScreen();
+    },1000);
+    requestFullScreen();
+    </script>
+    <style>
+    body {
+        background-color: #000000;
+        font-family: Arial, Helvetica, Sans-Serif;
+        Color: #000088;
+    }
+    
+    td {
+        background-color: #ccccff;
+    }    
+    button {
+        width: 15%;
+        height: 10%;
+        box-sizing: border-box;
+        margin: 0.5rem auto;
+        padding: 0.75rem;
+        font-size: 0.75rem;
+        text-align: center;
+        text-transform: uppercase;
+        color: white;
+        border: none;
+        background: #4e4eff;
+        border-radius: 0.5rem;
+        outline: none;
+        user-select: none;
+        cursor: pointer;
+    }
+    button:active {
+        transform: translateY(0.125rem);
+        background: #1e1e9f;
+    }
+    </style>
+</head>
+<body ontouchmove="blockMove()">
+        <div style="height:35%"></div>
+        <center>
+            <p>
+                <button onclick="execcmd('light')" style="width:24%">Licht</button>
+                <button onclick="execcmd('sound/1')" style="width:24%">Motor</button>
+                <button onclick="execcmd('sound/2')" style="width:24%">Horn</button>
+                <button onclick="execcmd('sound/3')" style="width:24%">Kupplung</button>
+            </p>
+            <p>
+                <button onclick="execcmd('speed/-3')">&lt;</button>
+                <button style="background-color: #6e6eff; color: #000000;" onclick="execcmd('speed/-2')">&lt;</button>
+                <button style="background-color: #8e8eff; color: #000000;" onclick="execcmd('speed/-1')">&lt;</button>
+                <button style="background-color: #8e8eff; color: #000000;" onclick="execcmd('speed/1')">&gt;</button>
+                <button style="background-color: #6e6eff; color: #000000;" onclick="execcmd('speed/2')">&gt;</button>
+                <button onclick="execcmd('speed/3')">&gt;</button>
+            </p>
+            <p> 
+                <button onclick="execcmd('speed/0')" style="width:50%">STOP</button>
+            </p>
+        </center>
+    </div>
+</body>
+</html>
+
