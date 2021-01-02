@@ -32,6 +32,10 @@
     window.setTimeout(function() {
         requestFullScreen();
     },1000);
+    window.setInterval(function() {
+        fetch('/cmd/keepalive');
+    },5000);
+    fetch('/cmd/keepalive');
     requestFullScreen();
     </script>
     <style>
