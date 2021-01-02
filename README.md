@@ -1,4 +1,4 @@
-# maerklin292xx_gateway
+# Maerklin 292xx Gateway for Arduino IDE and ESP32
 ESP32 WiFi to IR gateway for Märklin 29210 for example using ATOM Lite with TailBat from M5Stack.
 
 Requirements
