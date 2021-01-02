@@ -8,6 +8,8 @@
 #include <WebServer.h>
 #include <ESPmDNS.h>
 
+#include "htmlfs.h"
+
 const char *ssid = "ssid";
 const char *password = "password";
 
@@ -43,103 +45,6 @@ IRsend irsend(kIrLed);  // Set the GPIO to be used to sending the message.
 
 uint16_t codeCache[17];
 
-const char indexHtml[] = "<html>\r\n"
-"<head>\r\n"
-"    <!-- meta http-equiv='refresh' content='5'/-->\r\n"
-"    <meta name=\"mobile-web-app-capable\" content=\"yes\">\r\n"
-"    <meta charset=\"utf-8\">\r\n"
-"    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\r\n"
-"    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />\r\n"
-"    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />\r\n"
-"    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">\r\n"
-"    <title>Maerklin IR Remote</title>\r\n"
-"    <script>\r\n"
-"    function execcmd(cmd) {\r\n"
-"        fetch('/cmd/' + cmd);\r\n"
-"    }\r\n"
-"    function requestFullScreen() {\r\n"
-"        const _element = document.documentElement;\r\n"
-"        if (_element.requestFullscreen) {\r\n"
-"           _element.requestFullscreen();\r\n"
-"        } else {\r\n"
-"        if (_element.mozRequestFullScreen) {\r\n"
-"           _element.mozRequestFullScreen();\r\n"
-"        } else {\r\n"
-"           if (_element.webkitRequestFullscreen) {\r\n"
-"              _element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);\r\n"
-"           }\r\n"
-"        }\r\n"
-"      }\r\n"
-"    }\r\n"
-"    function blockMove() {\r\n"
-"          event.preventDefault() ;\r\n"
-"    }\r\n"
-"    window.setTimeout(function() {\r\n"
-"        requestFullScreen();\r\n"
-"    },1000);\r\n"
-"    requestFullScreen();\r\n"
-"    </script>\r\n"
-"    <style>\r\n"
-"    body {\r\n"
-"        background-color: #000000;\r\n"
-"        font-family: Arial, Helvetica, Sans-Serif;\r\n"
-"        Color: #000088;\r\n"
-"    }\r\n"
-"    \r\n"
-"    td {\r\n"
-"        background-color: #ccccff;\r\n"
-"    }"
-"    \r\n"
-"    input, button {\r\n"
-"        width: 15%;\r\n"
-"        height: 10%;\r\n"
-"        box-sizing: border-box;\r\n"
-"        margin: 0.5rem auto;\r\n"
-"        padding: 0.75rem;\r\n"
-"        font-size: 0.75rem;\r\n"
-"        text-align: center;\r\n"
-"        text-transform: uppercase;\r\n"
-"        color: white;\r\n"
-"        border: none;\r\n"
-"        background: #4e4eff;\r\n"
-"        border-radius: 0.5rem;\r\n"
-"        outline: none;\r\n"
-"        user-select: none;\r\n"
-"        cursor: pointer;\r\n"
-"    }\r\n"
-"    </style>\r\n"
-"</head>\r\n"
-"<body ontouchmove=\"blockMove()\">\r\n"
-"        <div style=\"height:35%\"></div>\r\n"
-"        <center>\r\n"
-"            <p>\r\n"
-"                <button onclick=\"execcmd('light')\" style=\"width:24%\">Licht</button>\r\n" 
-"                <button onclick=\"execcmd('sound/1')\" style=\"width:24%\">Motor</button>\r\n"
-"                <button onclick=\"execcmd('sound/2')\" style=\"width:24%\">Horn</button>\r\n"
-"                <button onclick=\"execcmd('sound/3')\" style=\"width:24%\">Kupplung</button>\r\n"
-"            </p>\r\n"
-"            <p>\r\n"
-"                <button onclick=\"execcmd('speed/-3')\">&lt;</button>\r\n"  
-"                <button style=\"background-color: #8e8eff; color: #000000;\" onclick=\"execcmd('speed/-2')\">&lt;</button>\r\n"  
-"                <button style=\"background-color: #ceceff; color: #000000;\" onclick=\"execcmd('speed/-1')\">&lt;</button>\r\n"  
-"                <button style=\"background-color: #ceceff; color: #000000;\" onclick=\"execcmd('speed/1')\">&gt;</button>\r\n"  
-"                <button style=\"background-color: #8e8eff; color: #000000;\" onclick=\"execcmd('speed/2')\">&gt;</button>\r\n"  
-"                <button onclick=\"execcmd('speed/3')\">&gt;</button>\r\n"
-"            </p>\r\n"
-"            <p> \r\n"
-"                <button onclick=\"execcmd('speed/0')\" style=\"width:50%\">STOP</button>\r\n"  
-"            </p>\r\n"
-"        </center>\r\n"
-"    </div>\r\n"
-"</body>\r\n"
-"</html>\r\n";
-
-
-
-void handleRoot() {
-  server.send(200, "text/html", (char*)indexHtml);
-}
-
 void setup() {
   // put your setup code here, to run once:
 
@@ -170,7 +75,7 @@ void setup() {
     Serial.println("MDNS responder started");
   }
 
-  server.on("/", handleRoot);
+  HtmlFs_Init(&server);
 
   server.on("/cmd/{}/{}", []() {
     String cmd = server.pathArg(0);
