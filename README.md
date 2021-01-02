@@ -31,8 +31,8 @@ To update the webpage change files in the html folder and navigate to the root f
 python create_web_store.py
 ````
 
-ESP32Wifi
----------
+ESP32Wifi module
+----------------
 handles setup of Station or SoftAP mode and going into sleep mode for station mode, so power can be saved
 
 See more information at: http://blog.io-expert.com/modernisiert-marklin-kinderspielzeug
