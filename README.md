@@ -1,5 +1,5 @@
 # maerklin292xx_gateway
-ESP32 WiFi to IR gateway for Märklin 29210
+ESP32 WiFi to IR gateway for Märklin 29210 for example using ATOM Lite with TailBat from M5Stack.
 
 Main Module 
 -----------
