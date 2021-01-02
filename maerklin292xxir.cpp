@@ -1,4 +1,3 @@
-
 /**
  *******************************************************************************
  ** Created by Manuel Schreiner
@@ -18,17 +17,18 @@
 
 /**
  *******************************************************************************
- **\file maerklin29210_gateway.ino
+ **\file maerklin292xxir.c
  **
- ** ESP32 WiFi to IR gateway for Märklin 29210
+ ** Maerklin292xx IR protocol using IRSend
+ ** A detailed description is available at
+ ** @link Maerklin292xxIrGroup file description @endlink
  **
- ** Set WiFi ssid, password and enWifiMode. 
- ** Default SSID: Maerklin292xxGateway, Password: Maerklin292xxGateway, enWifiMode: enESP32WifiModeSoftAP
- **   
  ** History:
  ** - 2021-1-2  1.00  Manuel Schreiner
  *******************************************************************************
  */
+
+#define __MAERKLIN292XXIR_C__
 
 /**
  *******************************************************************************
@@ -36,17 +36,11 @@
  *******************************************************************************
  */
 
+
 #include <Arduino.h>
-#include <IRremoteESP8266.h>
-
-#include <WiFi.h>
-#include <WiFiClient.h>
-#include <WebServer.h>
-#include <ESPmDNS.h>
-
-#include "esp32wifi.h"
 #include "maerklin292xxir.h"
-#include "irgatewaywebserver.h"
+#include <IRremoteESP8266.h>
+#include <IRsend.h>
 
 /**
  *******************************************************************************
@@ -66,17 +60,15 @@
  *******************************************************************************
  */
 
-
 /**
  *******************************************************************************
  ** Local variable definitions ('static') 
  *******************************************************************************
  */
 
-const char *ssid = "Maerklin292xxGateway";
-const char *password = "Maerklin292xxGateway";
-const en_esp32_wifi_mode_t enWifiMode = enESP32WifiModeSoftAP; //can be enESP32WifiModeSoftAP or enESP32WifiModeStation
-
+static uint16_t codeCache[17];
+static const uint16_t kIrLed = MAERKLIN292XXIR_IR_PIN; 
+static IRsend irsend(kIrLed);  // Set the GPIO to be used to sending the message.
 
 /**
  *******************************************************************************
@@ -90,35 +82,59 @@ const en_esp32_wifi_mode_t enWifiMode = enESP32WifiModeSoftAP; //can be enESP32W
  *******************************************************************************
  */
 
-void setup() {
-  // put your setup code here, to run once:
+/*
+ * Init IR Functionality based on IRremote
+ */
+void Maerklin292xxIr_Init(void)
+{
+  //initiate IR library
+  irsend.begin(); 
+}
 
-  //intiate serial port
-  Serial.begin(115200);
-
-  Maerklin292xxIr_Init();
-
-  //initiate WIFI
-  Esp32Wifi_Init(enWifiMode,ssid,password);
-                                                                  
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  if (MDNS.begin("maerklin292xx_gateway")) {
-    Serial.println("MDNS responder started");
+/*
+ * Send data
+ * 
+ * \param enAddress  Address, can be enMaerklin292xxIrAddressC or enMaerklin292xxIrAddressD
+ * 
+ * \param enFunction Function, can be one of en_maerklin_292xx_ir_func_t defined in maerklin292xxir.h
+ */
+void Maerklin292xxIr_Send(en_maerklin_292xx_ir_address_t enAddress, en_maerklin_292xx_ir_func_t enFunction)
+{
+  static bool bToggle = false;
+  static uint8_t u8LastCommand = 0;
+  uint8_t u8Command = (((uint8_t)enFunction & 0x7) << 4) | ((uint8_t)enAddress & 0xf);
+  int i;
+  if (u8Command != u8LastCommand)
+  {
+    bToggle = false;
   }
-
-  IrGatewayWebServer_Init();
+  u8LastCommand = u8Command;
+  
+  if (bToggle)
+  {
+    u8Command |= 0x80;
+  }
+  codeCache[0] = 5400;
+  
+  for(i = 0;i < 8;i++)
+  {
+    if ((u8Command & 0x80) != 0) 
+    {
+      codeCache[i*2 + 1] = 1700;
+      codeCache[i*2 + 2] = 600;
+    } else {
+      codeCache[i*2 + 1] = 600;
+      codeCache[i*2 + 2] = 1700;
+    }
+    u8Command = u8Command << 1;
+  }
+  irsend.sendRaw(codeCache,17,38);
+  delay(10);
+  bToggle = !bToggle;
 }
 
-
-
-void loop() {
-  // put your main code here, to run repeatedly:
-  IrGatewayWebServer_Update();
-  Esp32Wifi_Update();
-  IrGatewayWebServer_Update();
-}
+/**
+ *******************************************************************************
+ ** EOF (not truncated)
+ *******************************************************************************
+ */

@@ -1,4 +1,3 @@
-
 /**
  *******************************************************************************
  ** Created by Manuel Schreiner
@@ -18,107 +17,96 @@
 
 /**
  *******************************************************************************
- **\file maerklin29210_gateway.ino
+ **\file irgatewaywebserver.c
  **
- ** ESP32 WiFi to IR gateway for Märklin 29210
+ ** WebServer used as IR gateway
+ ** A detailed description is available at
+ ** @link IrGatewayWebServerGroup file description @endlink
  **
- ** Set WiFi ssid, password and enWifiMode. 
- ** Default SSID: Maerklin292xxGateway, Password: Maerklin292xxGateway, enWifiMode: enESP32WifiModeSoftAP
- **   
  ** History:
  ** - 2021-1-2  1.00  Manuel Schreiner
  *******************************************************************************
  */
 
+#if !defined(__IRGATEWAYWEBSERVER_H__)
+#define __IRGATEWAYWEBSERVER_H__
+
+/* C binding of definitions if building with C++ compiler */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /**
  *******************************************************************************
- ** Include files
+ ** \defgroup IrGatewayWebServerGroup WebServer used as IR gateway
+ **
+ ** Provided functions of IrGatewayWebServer:
+ **
+ **
  *******************************************************************************
  */
 
-#include <Arduino.h>
-#include <IRremoteESP8266.h>
-
-#include <WiFi.h>
-#include <WiFiClient.h>
-#include <WebServer.h>
-#include <ESPmDNS.h>
-
-#include "esp32wifi.h"
-#include "maerklin292xxir.h"
-#include "irgatewaywebserver.h"
+//@{
 
 /**
  *******************************************************************************
- ** Local pre-processor symbols/macros ('#define') 
- *******************************************************************************
- */
-
-/**
- *******************************************************************************
- ** Global variable definitions (declared in header file with 'extern') 
- *******************************************************************************
- */
-
-/**
- *******************************************************************************
- ** Local type definitions ('typedef') 
- *******************************************************************************
- */
-
-
-/**
- *******************************************************************************
- ** Local variable definitions ('static') 
- *******************************************************************************
- */
-
-const char *ssid = "Maerklin292xxGateway";
-const char *password = "Maerklin292xxGateway";
-const en_esp32_wifi_mode_t enWifiMode = enESP32WifiModeSoftAP; //can be enESP32WifiModeSoftAP or enESP32WifiModeStation
-
-
-/**
- *******************************************************************************
- ** Local function prototypes ('static') 
+** \page irgatewaywebserver_module_includes Required includes in main application
+** \brief Following includes are required
+** @code
+** #include "irgatewaywebserver.h"
+** @endcode
+**
  *******************************************************************************
  */
 
 /**
  *******************************************************************************
- ** Function implementation - global ('extern') and local ('static') 
+ ** (Global) Include files
  *******************************************************************************
  */
 
-void setup() {
-  // put your setup code here, to run once:
+#include <stdint.h>
 
-  //intiate serial port
-  Serial.begin(115200);
+/**
+ *******************************************************************************
+ ** Global pre-processor symbols/macros ('#define') 
+ *******************************************************************************
+ */
 
-  Maerklin292xxIr_Init();
+/**
+ *******************************************************************************
+ ** Global type definitions ('typedef') 
+ *******************************************************************************
+ */
 
-  //initiate WIFI
-  Esp32Wifi_Init(enWifiMode,ssid,password);
-                                                                  
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
 
-  if (MDNS.begin("maerklin292xx_gateway")) {
-    Serial.println("MDNS responder started");
-  }
 
-  IrGatewayWebServer_Init();
+/**
+ *******************************************************************************
+ ** Global variable declarations ('extern', definition in C source)
+ *******************************************************************************
+ */
+
+/**
+ *******************************************************************************
+ ** Global function prototypes ('extern', definition in C source) 
+ *******************************************************************************
+ */
+
+void IrGatewayWebServer_Init(void);
+void IrGatewayWebServer_Update(void);
+
+//@} // IrGatewayWebServerGroup
+
+#ifdef __cplusplus
 }
+#endif
 
+#endif /* __IRGATEWAYWEBSERVER_H__ */
 
-
-void loop() {
-  // put your main code here, to run repeatedly:
-  IrGatewayWebServer_Update();
-  Esp32Wifi_Update();
-  IrGatewayWebServer_Update();
-}
+/**
+ *******************************************************************************
+ ** EOF (not truncated)
+ *******************************************************************************
+ */

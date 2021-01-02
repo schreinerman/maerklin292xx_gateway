@@ -1,4 +1,3 @@
-
 /**
  *******************************************************************************
  ** Created by Manuel Schreiner
@@ -18,107 +17,118 @@
 
 /**
  *******************************************************************************
- **\file maerklin29210_gateway.ino
+ **\file maerklin292xxir.c
  **
- ** ESP32 WiFi to IR gateway for Märklin 29210
+ ** Maerklin292xx IR protocol using IRSend
+ ** A detailed description is available at
+ ** @link Maerklin292xxIrGroup file description @endlink
  **
- ** Set WiFi ssid, password and enWifiMode. 
- ** Default SSID: Maerklin292xxGateway, Password: Maerklin292xxGateway, enWifiMode: enESP32WifiModeSoftAP
- **   
  ** History:
  ** - 2021-1-2  1.00  Manuel Schreiner
  *******************************************************************************
  */
 
+#if !defined(__MAERKLIN292XXIR_H__)
+#define __MAERKLIN292XXIR_H__
+
+/* C binding of definitions if building with C++ compiler */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /**
  *******************************************************************************
- ** Include files
+ ** \defgroup Maerklin292xxIrGroup Maerklin292xx IR protocol using IRSend
+ **
+ ** Provided functions of Maerklin292xxIr:
+ **
+ **
  *******************************************************************************
  */
 
-#include <Arduino.h>
-#include <IRremoteESP8266.h>
-
-#include <WiFi.h>
-#include <WiFiClient.h>
-#include <WebServer.h>
-#include <ESPmDNS.h>
-
-#include "esp32wifi.h"
-#include "maerklin292xxir.h"
-#include "irgatewaywebserver.h"
+//@{
 
 /**
  *******************************************************************************
- ** Local pre-processor symbols/macros ('#define') 
- *******************************************************************************
- */
-
-/**
- *******************************************************************************
- ** Global variable definitions (declared in header file with 'extern') 
- *******************************************************************************
- */
-
-/**
- *******************************************************************************
- ** Local type definitions ('typedef') 
- *******************************************************************************
- */
-
-
-/**
- *******************************************************************************
- ** Local variable definitions ('static') 
- *******************************************************************************
- */
-
-const char *ssid = "Maerklin292xxGateway";
-const char *password = "Maerklin292xxGateway";
-const en_esp32_wifi_mode_t enWifiMode = enESP32WifiModeSoftAP; //can be enESP32WifiModeSoftAP or enESP32WifiModeStation
-
-
-/**
- *******************************************************************************
- ** Local function prototypes ('static') 
+** \page maerklin292xxir_module_includes Required includes in main application
+** \brief Following includes are required
+** @code
+** #include "maerklin292xxir.h"
+** @endcode
+**
  *******************************************************************************
  */
 
 /**
  *******************************************************************************
- ** Function implementation - global ('extern') and local ('static') 
+ ** (Global) Include files
  *******************************************************************************
  */
 
-void setup() {
-  // put your setup code here, to run once:
+#include <stdint.h>
 
-  //intiate serial port
-  Serial.begin(115200);
+/**
+ *******************************************************************************
+ ** Global pre-processor symbols/macros ('#define') 
+ *******************************************************************************
+ */
 
-  Maerklin292xxIr_Init();
+#define MAERKLIN292XXIR_IR_PIN 12
+/**
+ *******************************************************************************
+ ** Global type definitions ('typedef') 
+ *******************************************************************************
+ */
 
-  //initiate WIFI
-  Esp32Wifi_Init(enWifiMode,ssid,password);
-                                                                  
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+typedef enum en_maerklin_292xx_ir_address
+{
+  enMaerklin292xxIrAddressC = 0x5,
+  enMaerklin292xxIrAddressD = 0xa,
+} en_maerklin_292xx_ir_address_t;
 
-  if (MDNS.begin("maerklin292xx_gateway")) {
-    Serial.println("MDNS responder started");
-  }
 
-  IrGatewayWebServer_Init();
+typedef enum en_maerklin_292xx_ir_func
+{
+  enMaerklin292xxIrFuncStop = 0,
+  enMaerklin292xxIrFuncBackward = 1,
+  enMaerklin292xxIrFuncForward = 2,
+  enMaerklin292xxIrFuncSound1 = 3,
+  enMaerklin292xxIrFuncSoundDoorClose = 3,
+  enMaerklin292xxIrFuncSoundCoupler = 3,
+  enMaerklin292xxIrFuncSound2 = 4,
+  enMaerklin292xxIrFuncSoundHorn = 4,
+  enMaerklin292xxIrFuncSound3 = 5,
+  enMaerklin292xxIrFuncSoundMotor = 5,
+  enMaerklin292xxIrFuncSoundAnnouncement = 5,
+  enMaerklin292xxIrFuncLight = 6,
+} en_maerklin_292xx_ir_func_t;
+
+/**
+ *******************************************************************************
+ ** Global variable declarations ('extern', definition in C source)
+ *******************************************************************************
+ */
+
+/**
+ *******************************************************************************
+ ** Global function prototypes ('extern', definition in C source) 
+ *******************************************************************************
+ */
+
+void Maerklin292xxIr_Init(void);
+void Maerklin292xxIr_Send(en_maerklin_292xx_ir_address_t enAddress, en_maerklin_292xx_ir_func_t enFunction);
+
+//@} // Maerklin292xxIrGroup
+
+#ifdef __cplusplus
 }
+#endif
 
+#endif /* __MAERKLIN292XXIR_H__ */
 
-
-void loop() {
-  // put your main code here, to run repeatedly:
-  IrGatewayWebServer_Update();
-  Esp32Wifi_Update();
-  IrGatewayWebServer_Update();
-}
+/**
+ *******************************************************************************
+ ** EOF (not truncated)
+ *******************************************************************************
+ */
