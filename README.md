@@ -1,6 +1,14 @@
 # maerklin292xx_gateway
 ESP32 WiFi to IR gateway for Märklin 29210 for example using ATOM Lite with TailBat from M5Stack.
 
+Requirements
+------------
+Board/Platform Support Packages:
+- https://dl.espressif.com/dl/package_esp32_index.json
+
+The following library has to be installed as library and can be found in the Arduino repository: 
+- IRremoteESP8266
+
 Main Module 
 -----------
 is the Arduino File maerklin29210_gateway.ino
