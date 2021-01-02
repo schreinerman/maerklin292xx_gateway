@@ -5,9 +5,13 @@ Requirements
 ------------
 Board/Platform Support Packages:
 - https://dl.espressif.com/dl/package_esp32_index.json
+  
+  find a setup guide here: https://docs.m5stack.com/#/en/arduino/arduino_development
 
 The following library has to be installed as library and can be found in the Arduino repository: 
 - IRremoteESP8266
+
+  find a setup guide here: https://github.com/crankyoldgit/IRremoteESP8266
 
 Main Module 
 -----------
