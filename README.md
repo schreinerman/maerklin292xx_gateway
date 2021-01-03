@@ -1,6 +1,14 @@
 # Maerklin 292xx Gateway for Arduino IDE and ESP32
 ESP32 WiFi to IR gateway for Märklin 29210 (29200 support is planned) for example using ATOM Lite with TailBat from M5Stack.
 
+After upload to ATOM Lite, the locomotive can be controlled placed up to 10cm beside the IR sensor.
+
+The ESP32 will initiate as SoftAP, but can be changed to Station mode, too.
+
+Default SSID: Maerklin292xxGateway, Password: Maerklin292xxGateway
+
+The website can be found at http://maerklin292xx_gateway.local
+
 Requirements
 ------------
 Board/Platform Support Packages:
@@ -20,12 +28,12 @@ is the Arduino File maerklin29210_gateway.ino
 IrGatewayWebServer module
 --------------------------
 is providing the webservice and creates following enry points:
-- http://IPADDRESS/ Webpage
-- http://IPADDRESS/cmd/speed/N N =-3…0…3, Speed in 3 steps for backward, forward, 0 = stop
-- http://IPADDRESS/cmd/light toggle light on or off
-- http://IPADDRESS/cmd/sound/horn play horn sound
-- http://IPADDRESS/cmd/sound/motor play motor sound
-- http://IPADDRESS/cmd/sound/coupler play coupler sound
+- http://maerklin292xx_gateway.local/ Webpage
+- http://maerklin292xx_gateway.local/cmd/speed/N N =-3…0…3, Speed in 3 steps for backward, forward, 0 = stop
+- http://maerklin292xx_gateway.local/cmd/light toggle light on or off
+- http://maerklin292xx_gateway.local/cmd/sound/horn play horn sound
+- http://maerklin292xx_gateway.local/cmd/sound/motor play motor sound
+- http://maerklin292xx_gateway.local/cmd/sound/coupler play coupler sound
 
 HtmlFs module
 -------------
