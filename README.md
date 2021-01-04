@@ -1,5 +1,5 @@
 # Maerklin 292xx Gateway for Arduino IDE and ESP32
-ESP32 WiFi to IR gateway for Märklin 29210 (29200 support is planned) for example using ATOM Lite with TailBat from M5Stack.
+ESP32 WiFi to IR gateway for Märklin 29200 and Märklin 29210 for example using ATOM Lite with TailBat from M5Stack.
 
 After upload to ATOM Lite, the locomotive can be controlled placed up to 10cm beside the IR sensor.
 
