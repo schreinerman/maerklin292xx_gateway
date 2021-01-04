@@ -83,6 +83,8 @@ extern "C"
 
 typedef enum en_maerklin_292xx_ir_address
 {
+  enMaerklin292xxIrAddressA = 0xa0,
+  enMaerklin292xxIrAddressB = 0xb0,
   enMaerklin292xxIrAddressC = 0x5,
   enMaerklin292xxIrAddressD = 0xa,
 } en_maerklin_292xx_ir_address_t;
@@ -103,6 +105,35 @@ typedef enum en_maerklin_292xx_ir_func
   enMaerklin292xxIrFuncSoundAnnouncement = 5,
   enMaerklin292xxIrFuncLight = 6,
 } en_maerklin_292xx_ir_func_t;
+
+typedef uint16_t maerklin_292xx_ir_code_t;
+
+typedef struct stc_maerklin_292xx_ir_codeset
+{
+  maerklin_292xx_ir_code_t codes[2];
+} stc_maerklin_292xx_ir_codeset_t;
+
+typedef struct stc_maerklin_292xx_ir_channelset
+{
+  stc_maerklin_292xx_ir_codeset_t stop;
+  stc_maerklin_292xx_ir_codeset_t backward;
+  stc_maerklin_292xx_ir_codeset_t forward;
+  stc_maerklin_292xx_ir_codeset_t light;
+  union {
+    stc_maerklin_292xx_ir_codeset_t sound1;
+    stc_maerklin_292xx_ir_codeset_t soundDoorClose;
+    stc_maerklin_292xx_ir_codeset_t soundCoupler;
+  };
+  union {
+    stc_maerklin_292xx_ir_codeset_t sound2;
+    stc_maerklin_292xx_ir_codeset_t soundHorn;
+  };
+  union {  
+    stc_maerklin_292xx_ir_codeset_t sound3;
+    stc_maerklin_292xx_ir_codeset_t soundMotor;
+    stc_maerklin_292xx_ir_codeset_t soundAnnouncement;
+  };
+} stc_maerklin_292xx_ir_channelset_t;
 
 /**
  *******************************************************************************

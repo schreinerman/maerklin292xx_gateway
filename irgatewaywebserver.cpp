@@ -70,7 +70,7 @@
  *******************************************************************************
  */
 static WebServer server(80);
-
+static en_maerklin_292xx_ir_address_t enIrAddress = enMaerklin292xxIrAddressA;
 /**
  *******************************************************************************
  ** Local function prototypes ('static') 
@@ -86,8 +86,9 @@ static WebServer server(80);
 /*
  * Init Webserver Service
  */
-void IrGatewayWebServer_Init(void)
+void IrGatewayWebServer_Init(en_maerklin_292xx_ir_address_t enIrChannelAddress)
 {
+  enIrAddress = enIrChannelAddress;
   HtmlFs_Init(&server);
 
   server.on("/cmd/{}/{}", []() {
@@ -98,31 +99,31 @@ void IrGatewayWebServer_Init(void)
     {
         if ((cmdArg == "motor") || (cmdArg == "3"))
         {
-            Maerklin292xxIr_Send(enMaerklin292xxIrAddressC,enMaerklin292xxIrFuncSound1);
+            Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncSound1);
         } else if ((cmdArg == "horn") || (cmdArg == "2"))
         {
-            Maerklin292xxIr_Send(enMaerklin292xxIrAddressC,enMaerklin292xxIrFuncSound2);
+            Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncSound2);
         } else if ((cmdArg == "coupler") || (cmdArg == "1"))
         {
-            Maerklin292xxIr_Send(enMaerklin292xxIrAddressC,enMaerklin292xxIrFuncSound3);
+            Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncSound3);
         } 
     } else if (cmd == "speed")
     {
       int speed = cmdArg.toInt();
-      Maerklin292xxIr_Send(enMaerklin292xxIrAddressC,enMaerklin292xxIrFuncStop);
+      Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncStop);
       if (speed > 0)
       {
          while(speed != 0)
          {
             speed--;
-            Maerklin292xxIr_Send(enMaerklin292xxIrAddressC,enMaerklin292xxIrFuncForward);
+            Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncForward);
          }
       } else if (speed < 0)
       {
          while(speed != 0)
          {
             speed++;
-            Maerklin292xxIr_Send(enMaerklin292xxIrAddressC,enMaerklin292xxIrFuncBackward);
+            Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncBackward);
          }
       } 
     }
@@ -134,16 +135,16 @@ void IrGatewayWebServer_Init(void)
     Esp32Wifi_KeepAlive();
     if (cmd == "forward")
     {
-        Maerklin292xxIr_Send(enMaerklin292xxIrAddressC,enMaerklin292xxIrFuncForward);
+        Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncForward);
     } else if (cmd == "stop")
     {
-        Maerklin292xxIr_Send(enMaerklin292xxIrAddressC,enMaerklin292xxIrFuncStop);
+        Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncStop);
     }  else if (cmd == "backward")
     {
-        Maerklin292xxIr_Send(enMaerklin292xxIrAddressC,enMaerklin292xxIrFuncBackward);
+        Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncBackward);
     } else if (cmd == "light")
     {
-        Maerklin292xxIr_Send(enMaerklin292xxIrAddressC,enMaerklin292xxIrFuncLight);
+        Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncLight);
     } else if (cmd == "keepalive")
     {
         //Serial.println("k");

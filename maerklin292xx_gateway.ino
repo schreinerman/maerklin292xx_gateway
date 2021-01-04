@@ -76,7 +76,7 @@
 const char *ssid = "Maerklin292xxGateway";
 const char *password = "Maerklin292xxGateway";
 const en_esp32_wifi_mode_t enWifiMode = enESP32WifiModeSoftAP; //can be enESP32WifiModeSoftAP or enESP32WifiModeStation
-
+const en_maerklin_292xx_ir_address_t enIrChannelAddress = enMaerklin292xxIrAddressC;
 
 /**
  *******************************************************************************
@@ -111,7 +111,7 @@ void setup() {
     Serial.println("MDNS responder started");
   }
 
-  IrGatewayWebServer_Init();
+  IrGatewayWebServer_Init(enIrChannelAddress);
 }
 
 

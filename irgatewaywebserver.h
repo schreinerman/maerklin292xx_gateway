@@ -67,6 +67,7 @@ extern "C"
  */
 
 #include <stdint.h>
+#include "maerklin292xxir.h"
 
 /**
  *******************************************************************************
@@ -94,7 +95,7 @@ extern "C"
  *******************************************************************************
  */
 
-void IrGatewayWebServer_Init(void);
+void IrGatewayWebServer_Init(en_maerklin_292xx_ir_address_t enIrChannelAddress);
 void IrGatewayWebServer_Update(void);
 
 //@} // IrGatewayWebServerGroup
