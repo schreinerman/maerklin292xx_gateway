@@ -77,39 +77,48 @@ static en_maerklin_292xx_ir_address_t enIrAddress = enMaerklin292xxIrAddressA;
  *******************************************************************************
  */
 
+static void processCommand(String channel, String command, String commandArg);
+
 /**
  *******************************************************************************
  ** Function implementation - global ('extern') and local ('static') 
  *******************************************************************************
  */
 
-/*
- * Init Webserver Service
- */
-void IrGatewayWebServer_Init(en_maerklin_292xx_ir_address_t enIrChannelAddress)
+static void processCommand(String channel, String command, String commandArg)
 {
-  enIrAddress = enIrChannelAddress;
-  HtmlFs_Init(&server);
-
-  server.on("/cmd/{}/{}", []() {
-    String cmd = server.pathArg(0);
-    String cmdArg = server.pathArg(1);
     Esp32Wifi_KeepAlive();
-    if (cmd == "sound")
+    if (channel != "")
     {
-        if ((cmdArg == "motor") || (cmdArg == "3"))
+        if (channel == "A")
+        {
+           enIrAddress = enMaerklin292xxIrAddressA;
+        } else if (channel == "B")
+        {
+           enIrAddress = enMaerklin292xxIrAddressB;
+        } else if (channel == "C")
+        {
+           enIrAddress = enMaerklin292xxIrAddressC;
+        }  else if (channel == "D")
+        {
+           enIrAddress = enMaerklin292xxIrAddressD;
+        }
+    }
+    if (command == "sound")
+    {
+        if ((commandArg == "motor") || (commandArg == "3"))
         {
             Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncSound1);
-        } else if ((cmdArg == "horn") || (cmdArg == "2"))
+        } else if ((commandArg == "horn") || (commandArg == "2"))
         {
             Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncSound2);
-        } else if ((cmdArg == "coupler") || (cmdArg == "1"))
+        } else if ((commandArg == "coupler") || (commandArg == "1"))
         {
             Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncSound3);
         } 
-    } else if (cmd == "speed")
+    } else if (command == "speed")
     {
-      int speed = cmdArg.toInt();
+      int speed = commandArg.toInt();
       Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncStop);
       if (speed > 0)
       {
@@ -126,30 +135,63 @@ void IrGatewayWebServer_Init(en_maerklin_292xx_ir_address_t enIrChannelAddress)
             Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncBackward);
          }
       } 
+    } else if (command == "forward")
+    {
+        Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncForward);
+    } else if (command == "stop")
+    {
+        Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncStop);
+    }  else if (command == "backward")
+    {
+        Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncBackward);
+    } else if (command == "light")
+    {
+        Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncLight);
+    } else if (command == "keepalive")
+    {
+        //Serial.println("k");
     }
-    server.send(200, "text/plain", "this works as well");
+    server.send(200, "text/plain", "done");
+}
+
+/*
+ * Init Webserver Service
+ */
+void IrGatewayWebServer_Init(en_maerklin_292xx_ir_address_t enIrChannelAddress)
+{
+  enIrAddress = enIrChannelAddress;
+  HtmlFs_Init(&server);
+
+  server.on("/cmd/{}/{}/{}", []() {
+    String channel = server.pathArg(0);
+    String cmd = server.pathArg(1);
+    String cmdArgs = server.pathArg(2);
+    processCommand(channel,cmd,cmdArgs);
+  });
+
+  server.on("/cmd/{}/{}", []() {
+    String channel = server.pathArg(0);
+    String cmd = server.pathArg(1);
+    String cmdArgs = "";
+    if (!((channel.charAt(0) >= 'A') && (channel.charAt(0) <= 'D')))
+    {
+       channel = "";
+       cmd = server.pathArg(0);
+       cmdArgs = server.pathArg(1);
+    }
+    processCommand(channel,cmd,cmdArgs);
   });
 
   server.on("/cmd/{}", []() {
     String cmd = server.pathArg(0);
     Esp32Wifi_KeepAlive();
-    if (cmd == "forward")
+    if (cmd == "keepalive")
     {
-        Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncForward);
-    } else if (cmd == "stop")
+        server.send(200, "text/plain", "keep alive accepted");
+    } else
     {
-        Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncStop);
-    }  else if (cmd == "backward")
-    {
-        Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncBackward);
-    } else if (cmd == "light")
-    {
-        Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncLight);
-    } else if (cmd == "keepalive")
-    {
-        //Serial.println("k");
-    }
-    server.send(200, "text/plain", "this works as well");
+        processCommand("",cmd,"");
+    } 
   });
   
   server.begin();

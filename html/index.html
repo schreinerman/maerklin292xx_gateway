@@ -10,7 +10,15 @@
     <title>Maerklin IR Remote</title>
     <script>
     function execcmd(cmd) {
-        fetch('/cmd/' + cmd);
+        var addressElements = document.getElementsByName('tab-group-address');
+        var selectedAddress;
+
+        for(var i = 0; i < addressElements.length; i++) {
+            if(addressElements[i].checked)
+                selectedAddress = addressElements[i].value;
+        }
+
+        fetch('/cmd/' + selectedAddress + '/' + cmd);
     }
     function requestFullScreen() {
         const _element = document.documentElement;
@@ -69,10 +77,53 @@
         transform: translateY(0.125rem);
         background: #1e1e9f;
     }
+    .tab {
+        width:25%;
+        height:100%;
+        float: left;
+    }
+    .tab label {
+        background: #eee; 
+        padding: 20px; 
+        border: 1px solid #ccc; 
+        margin-left: -1px; 
+        position: relative;
+        left: 1px; 
+        border-radius: 0.1rem;
+    }
+    .tab [type=radio] {
+        display: none;   
+    }
+    [type=radio]:checked ~ label {
+        background:  #4e4eff;
+        border-bottom: 1px solid  #4e4eff;
+        z-index: 2;
+    }
+    [type=radio]:checked ~ label ~ .content {
+        z-index: 1;
+    }
     </style>
 </head>
 <body ontouchmove="blockMove()">
-        <div style="height:35%"></div>
+        <div style="height:25%"></div>
+        <div style="height:10%; margin:0 auto; width:210px">
+            <div class="tab">
+                <input type="radio" id="A" value="A" name="tab-group-address">
+                <label style="border-radius: 0.5em 0.1em 0.1em 0.5em" for="A">A</label>
+            </div>
+            <div class="tab">
+                <input type="radio" id="B" value="B" name="tab-group-address">
+                <label for="B">B</label>
+            </div>
+            <div class="tab">
+                <input type="radio" id="C" value="C" name="tab-group-address" checked>
+                <label for="C">C</label>
+            </div>
+            <div class="tab">
+                <input type="radio" id="D" value="D" name="tab-group-address">
+                <label for="D" style="border-radius: 0.1em 0.5em 0.5em 0.1em">D</label>
+            </div>
+        </div>
         <center>
             <p>
                 <button onclick="execcmd('light')" style="width:24%">Licht</button>
