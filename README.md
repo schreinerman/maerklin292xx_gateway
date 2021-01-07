@@ -35,6 +35,12 @@ is providing the webservice and creates following enry points:
 - http://maerklin292xx_gateway.local/cmd/sound/motor play motor sound
 - http://maerklin292xx_gateway.local/cmd/sound/coupler play coupler sound
 
+additionally the channel can be defined:
+- http://maerklin292xx_gateway.local/cmd/CHANNEL/CMD CHANNEL=A,B,C or D, CMD as described above.
+
+Example:
+- http://maerklin292xx_gateway.local/cmd/A/light toggled the light via channel A
+
 HtmlFs module
 -------------
 contains the web content and is automatically generated via create_web_store.py.
