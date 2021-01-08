@@ -24,7 +24,7 @@ The following library has to be installed as library and can be found in the Ard
 
 Main Module 
 -----------
-is the Arduino File maerklin29210_gateway.ino
+is the Arduino File maerklin292xx_gateway.ino
 
 IrGatewayWebServer module
 --------------------------
