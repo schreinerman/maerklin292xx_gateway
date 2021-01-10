@@ -99,6 +99,7 @@ typedef enum en_esp32_wifi_mode
  */
 
 void Esp32Wifi_Init(en_esp32_wifi_mode_t mode, const char* ssid, const char* password);
+void Esp32Wifi_DualModeInit(const char* ssidStation, const char* passwordStation, const char* ssidAp, const char* passwordAp);
 void Esp32Wifi_Connect(void);
 void Esp32Wifi_Update(void);
 void Esp32Wifi_KeepAlive(void);

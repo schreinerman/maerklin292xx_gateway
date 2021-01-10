@@ -74,8 +74,11 @@
 
 static uint32_t millisOld = 0;
 static volatile uint32_t u32Counter = 1;
-static char* _ssid;
-static char* _password;
+static char* _ssidStationMode;
+static char* _passwordStationMode;
+static char* _ssidApMode;
+static char* _passwordApMode;
+
 static en_esp32_wifi_mode_t _mode = enESP32WifiModeSoftAP;
 
 /**
@@ -107,9 +110,51 @@ static void ConnectSoftAP(void);
 void Esp32Wifi_Init(en_esp32_wifi_mode_t mode, const char* ssid, const char* password)
 {
     _mode = mode;
-    _ssid = (char*)ssid;
-    _password = (char*)password;
+    _ssidStationMode = (char*)ssid;
+    _passwordStationMode = (char*)password;
+    _ssidApMode = (char*)ssid;
+    _passwordApMode = (char*)password;
     esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR); // ESP32 wakes up every 5 seconds
+    Esp32Wifi_Connect();
+}
+
+/**
+ * Init WiFi
+ * 
+ * \param ssidStation      WiFi SSID for Station Mode
+ * 
+ * \param passwordStation  WiFi Password for Station Mode
+ * 
+ * \param ssidAp           WiFi SSID for AP Mode
+ * 
+ * \param passwordAp       WiFi Password for AP Mode
+ * 
+ */
+void Esp32Wifi_DualModeInit(const char* ssidStation, const char* passwordStation, const char* ssidAp, const char* passwordAp)
+{
+    _ssidStationMode = (char*)ssidStation;
+    _passwordStationMode = (char*)passwordStation;
+    _ssidApMode = (char*)ssidAp;
+    _passwordApMode = (char*)passwordAp;
+    esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR); // ESP32 wakes up every 5 seconds
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(_ssidStationMode, _passwordStationMode);
+    // Wait for connection
+    uint32_t u32Tries = 1;
+    while (WiFi.status() != WL_CONNECTED) 
+    {
+        delay(500);
+        //Serial.print(".");
+        u32Tries++;
+        if ((u32Tries % 10) == 0)
+        {
+           _mode = enESP32WifiModeSoftAP;
+           WiFi.disconnect();
+           Esp32Wifi_Connect();
+           return;
+        }
+    }
+    _mode = enESP32WifiModeStation;
     Esp32Wifi_Connect();
 }
 
@@ -121,7 +166,7 @@ static void ConnectStation(void)
   if (WiFi.status() != WL_CONNECTED)
   {
       WiFi.mode(WIFI_STA);
-      WiFi.begin(_ssid, _password);
+      WiFi.begin(_ssidStationMode, _passwordStationMode);
       //Serial.println("WiFi initiated...");
     
       // Wait for connection
@@ -134,7 +179,7 @@ static void ConnectStation(void)
           if ((u32Tries % 10) == 0)
           {
             WiFi.mode(WIFI_STA);
-            WiFi.begin(_ssid, _password);
+            WiFi.begin(_ssidStationMode, _passwordStationMode);
             //Serial.println("WiFi initiated...");
           }
       }
@@ -150,7 +195,7 @@ static void ConnectSoftAP(void)
     if (!bConnected)
     {
       bConnected = true;
-      WiFi.softAP(_ssid, _password);
+      WiFi.softAP(_ssidApMode, _passwordApMode);
       IPAddress myIP = WiFi.softAPIP();
       Serial.print("AP IP address: ");
       Serial.println(myIP);

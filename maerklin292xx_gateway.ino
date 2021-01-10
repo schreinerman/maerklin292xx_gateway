@@ -22,8 +22,11 @@
  **
  ** ESP32 WiFi to IR gateway for Märklin 29210
  **
- ** Set WiFi ssid, password and enWifiMode. 
- ** Default SSID: Maerklin292xxGateway, Password: Maerklin292xxGateway, enWifiMode: enESP32WifiModeSoftAP
+ ** Set WiFi ssidAp, passwordAp for the Accesspoint to be generated
+ ** Default SSID: Maerklin292xxGateway, Password: Maerklin292xxGateway
+ **
+ ** Set ssidStation and passwordStation to log into your local Wifi.
+ ** If the local wifi can't be reached, an access point will be created
  **   
  ** History:
  ** - 2021-1-2  1.00  Manuel Schreiner
@@ -73,9 +76,10 @@
  *******************************************************************************
  */
 
-const char *ssid = "Maerklin292xxGateway";
-const char *password = "Maerklin292xxGateway";
-const en_esp32_wifi_mode_t enWifiMode = enESP32WifiModeSoftAP; //can be enESP32WifiModeSoftAP or enESP32WifiModeStation
+const char *ssidAp = "Maerklin292xxGateway";
+const char *passwordAp = "Maerklin292xxGateway";
+const char *ssidStation = "MyLocalWifi";
+const char *passwordStation = "MyLocalWifiPassword";
 const en_maerklin_292xx_ir_address_t enIrChannelAddress = enMaerklin292xxIrAddressC;
 
 /**
@@ -99,11 +103,9 @@ void setup() {
   Maerklin292xxIr_Init();
 
   //initiate WIFI
-  Esp32Wifi_Init(enWifiMode,ssid,password);
+  Esp32Wifi_DualModeInit(ssidStation,passwordStation,ssidAp,passwordAp);
                                                                   
   Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
