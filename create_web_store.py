@@ -20,15 +20,22 @@ for subdir, dirs, files in os.walk("html"):
             fileType = "text/plain"
             if fileName.endswith("html"):
                 fileType = "text/html"
+            if fileName.endswith("xml"):
+                fileType = "text/xml"
             if fileName.endswith("png"):
                 fileType = "image/png"
             if fileName.endswith("jpg"):
                 fileType = "image/jpeg"
+            if fileName.endswith("svg"):
+                fileType = "image/svg"
+            if fileName.endswith("ico"):
+                fileType = "image/ico"
 
             strFileName = fileName[5:]
             strInitScript += "    _pServer->on(\"/" + strFileName + "\", []() {\r\n"
             strFileName = strFileName.replace("/","_")
             strFileName = strFileName.replace(".","_")
+            strFileName = strFileName.replace("-","_")
             if (fileType.startswith("text")):
                 strInitScript += "        _pServer->send(200, \"" + fileType + "\", (char*)au8" + strFileName + ");\r\n"
             else:
