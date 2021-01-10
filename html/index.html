@@ -57,14 +57,41 @@
     function blockMove() {
           event.preventDefault() ;
     }
+
+    function handleKeepAlive()
+    {
+        let overlay = document.getElementById("overlay");
+        fetch('/cmd/keepalive')
+        .then(data => {          
+            console.log('Success:', data);
+            if (data.ok)
+            {
+                overlay.style.display = "none";               
+            } else
+            {
+                overlay.style.display = "block";
+            }
+        })
+        .catch((error) => {
+            let overlay = document.getElementById("overlay");
+            console.log('Error:', error);
+            overlay.style.display = "block";
+        });
+    }
+
     window.setTimeout(function() {
         requestFullScreen();
     },1000);
+
     window.setInterval(function() {
-        fetch('/cmd/keepalive');
+        handleKeepAlive();
     },5000);
-    fetch('/cmd/keepalive');
-    requestFullScreen();
+
+    window.setTimeout(function() {
+        handleKeepAlive();
+        requestFullScreen();
+    },100);
+    
     </script>
     <style>
     
@@ -136,6 +163,39 @@
         bottom: 0px; 
         width:95%
     }
+    .loader {
+        position: relative;
+        border: 3px solid #535353;
+        border-radius: 50%;
+        border-top: 3px solid #3498db;
+        width: 10px;
+        height: 10px;
+        left:50%;
+        top:50%;
+        -webkit-animation: spin 1s linear infinite; /* Safari */
+        animation: spin 1s linear infinite;
+    }
+    #overlay{
+        position: absolute;
+        top:0px;
+        left:0px;
+        width: 100%;
+        height: 100%;
+        background: black;
+        opacity: .5;
+        z-index: 3;
+    }
+    /* Safari */
+    @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+  }
     </style>
 </head>
 <body ontouchmove="blockMove()" ontouchstart="tapHandler">
@@ -226,6 +286,9 @@
                 </button>
             </p>
         </center>
+    </div>
+    <div id="overlay">
+        <div class="loader"></div>
     </div>
 </body>
 </html>
