@@ -137,6 +137,7 @@ void Esp32Wifi_DualModeInit(const char* ssidStation, const char* passwordStation
     _ssidApMode = (char*)ssidAp;
     _passwordApMode = (char*)passwordAp;
     esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR); // ESP32 wakes up every 5 seconds
+    WiFi.disconnect();
     WiFi.mode(WIFI_STA);
     WiFi.begin(_ssidStationMode, _passwordStationMode);
     // Wait for connection
@@ -144,16 +145,23 @@ void Esp32Wifi_DualModeInit(const char* ssidStation, const char* passwordStation
     while (WiFi.status() != WL_CONNECTED) 
     {
         delay(500);
-        //Serial.print(".");
+        
         u32Tries++;
-        if ((u32Tries % 10) == 0)
+        if ((u32Tries % 15) == 0)
         {
+           WiFi.mode(WIFI_STA);
+           WiFi.begin(_ssidStationMode, _passwordStationMode);
+        }
+        if ((u32Tries % 30) == 0)
+        {
+           Serial.println("AP Connected...");
            _mode = enESP32WifiModeSoftAP;
            WiFi.disconnect();
            Esp32Wifi_Connect();
            return;
         }
     }
+    Serial.println("STA Connected...");
     _mode = enESP32WifiModeStation;
     Esp32Wifi_Connect();
 }
