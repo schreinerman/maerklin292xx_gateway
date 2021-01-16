@@ -1,5 +1,36 @@
 # Maerklin 292xx Gateway for Arduino IDE and ESP32
-ESP32 WiFi to IR gateway for Märklin 29200, Märklin 29210 and Märklin 36100 for example using ATOM Lite with TailBat from M5Stack.
+ESP32 WiFi to IR gateway for Märklin IR model trains for kids for example using ATOM Lite with TailBat from M5Stack.
+
+Currently supported addresses A,B,C,D,G,H
+
+| Name                                                  | Adresse       | Akku          | URL                                                           |
+|-------------------------------------------------------|---------------|---------------|---------------------------------------------------------------|
+| Märklin 29100	Nahverkehrszug LINT                     | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/29100
+| Märklin 29200	ICE                                     | A-B           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29200
+| Märklin 29201	TGV                                     | A-B           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29201
+| Märklin 29202	Belgischer Hochgeschwindigkeitszug      | A-B           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29202
+| Märklin 29203	ICN                                     | C-D           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29203
+| Märklin 29204 Amerikanischer Hochgeschwindigkeitszug  | C-D           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29204
+| Märklin 29206 Mauszug                                 | C-D           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29206
+| Märklin 29207 Ferien-Express                          | A-B           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29207
+| Märklin 29208 Eurostar                                | A-B           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29208
+| Märklin 29209 Regional Express                        | C-D           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29209
+| Märklin 29210	Güterzug                                | C-D           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29200
+| Märklin 29212 TGV Duplex                              | C-D           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29212
+| Märklin 29300 ICE                                     | A-B           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29300
+| Märklin 29302 Intercity                               | C-D           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29302 
+| Märklin 29303 ICN                                     | C-D           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29303
+| Märklin 29304 TGV Lyria                               | A-B           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29304
+| Märklin 29306 TGV                                     | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29306
+| Märklin 29307 Airport Express - Hochbahn              | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/29307
+| Märklin 29308 Landwirtschaft                          | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29308
+| Märklin 29309 Güterzug                                | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/29309
+| Märklin 29330 ICE 3                                   | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29330
+| Märklin 29334 Italienischer Schnellzug                | M-N           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29334
+| Märklin 29335 Schweizer Schnellzug                    | M-N           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29335
+| Märklin 36100 Nahverkehrszug LINT                     | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/36100
+| Märklin 36101 Diesellokomotive BR 212                 | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/36100
+
 
 After upload to ATOM Lite, the locomotive can be controlled placed up to 10cm beside the IR sensor. An external IR transmitter diode can be used by chaning the GPIO channel in maerklin292xxir.h at ```#define MAERKLIN292XXIR_IR_PIN 12``` from 12 to your choice. For example chaning to 25 makes it possible to use some external IR transmitters for having a wide range conection at the bottom connector. Best is to use GND, 5V for the power supply of the IR transmitter. For example using: RM-024 LDTR
 
