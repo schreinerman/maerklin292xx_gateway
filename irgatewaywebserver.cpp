@@ -99,42 +99,33 @@ static void processCommand(String channel, String command, String commandArg)
         } else if (channel == "C")
         {
            enIrAddress = enMaerklin292xxIrAddressC;
-        }  else if (channel == "D")
+        } else if (channel == "D")
         {
            enIrAddress = enMaerklin292xxIrAddressD;
+        } else if (channel == "G")
+        {
+           enIrAddress = enMaerklin292xxIrAddressG;
+        } else if (channel == "H")
+        {
+           enIrAddress = enMaerklin292xxIrAddressH;
         }
     }
     if (command == "sound")
     {
         if ((commandArg == "motor") || (commandArg == "3"))
         {
-            Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncSound1);
+            Maerklin292xxIr_ToggleSoundLight(enIrAddress,enMaerklin292xxIrFuncSound1);
         } else if ((commandArg == "horn") || (commandArg == "2"))
         {
-            Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncSound2);
+            Maerklin292xxIr_ToggleSoundLight(enIrAddress,enMaerklin292xxIrFuncSound2);
         } else if ((commandArg == "coupler") || (commandArg == "1"))
         {
-            Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncSound3);
+            Maerklin292xxIr_ToggleSoundLight(enIrAddress,enMaerklin292xxIrFuncSound3);
         } 
     } else if (command == "speed")
     {
       int speed = commandArg.toInt();
-      Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncStop);
-      if (speed > 0)
-      {
-         while(speed != 0)
-         {
-            speed--;
-            Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncForward);
-         }
-      } else if (speed < 0)
-      {
-         while(speed != 0)
-         {
-            speed++;
-            Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncBackward);
-         }
-      } 
+      Maerklin292xxIr_SetSpeed(enIrAddress,speed);
     } else if (command == "forward")
     {
         Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncForward);
@@ -146,7 +137,7 @@ static void processCommand(String channel, String command, String commandArg)
         Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncBackward);
     } else if (command == "light")
     {
-        Maerklin292xxIr_Send(enIrAddress,enMaerklin292xxIrFuncLight);
+        Maerklin292xxIr_ToggleSoundLight(enIrAddress,enMaerklin292xxIrFuncLight);
     } else if (command == "keepalive")
     {
         //Serial.println("k");
@@ -156,6 +147,8 @@ static void processCommand(String channel, String command, String commandArg)
 
 /*
  * Init Webserver Service
+ * 
+ * \param enIrChannelAddress default IR channel
  */
 void IrGatewayWebServer_Init(en_maerklin_292xx_ir_address_t enIrChannelAddress)
 {
@@ -173,7 +166,7 @@ void IrGatewayWebServer_Init(en_maerklin_292xx_ir_address_t enIrChannelAddress)
     String channel = server.pathArg(0);
     String cmd = server.pathArg(1);
     String cmdArgs = "";
-    if (!((channel.charAt(0) >= 'A') && (channel.charAt(0) <= 'D')))
+    if (!((channel.charAt(0) >= 'A') && (channel.charAt(0) <= 'Z')))
     {
        channel = "";
        cmd = server.pathArg(0);

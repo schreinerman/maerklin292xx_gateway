@@ -83,10 +83,12 @@ extern "C"
 
 typedef enum en_maerklin_292xx_ir_address
 {
-  enMaerklin292xxIrAddressA = 0xa0,
-  enMaerklin292xxIrAddressB = 0xb0,
-  enMaerklin292xxIrAddressC = 0x5,
-  enMaerklin292xxIrAddressD = 0xa,
+  enMaerklin292xxIrAddressA = 0x1,
+  enMaerklin292xxIrAddressB = 0x2,
+  enMaerklin292xxIrAddressC = 0x3,
+  enMaerklin292xxIrAddressD = 0x4,
+  enMaerklin292xxIrAddressG = 0x7,
+  enMaerklin292xxIrAddressH = 0x8,
 } en_maerklin_292xx_ir_address_t;
 
 
@@ -104,6 +106,13 @@ typedef enum en_maerklin_292xx_ir_func
   enMaerklin292xxIrFuncSoundMotor = 5,
   enMaerklin292xxIrFuncSoundAnnouncement = 5,
   enMaerklin292xxIrFuncLight = 6,
+  enMaerklin292xxIrFuncSpeedForward1 = 0x10,
+  enMaerklin292xxIrFuncSpeedForward2 = 0x20,
+  enMaerklin292xxIrFuncSpeedForward3 = 0x30,
+  enMaerklin292xxIrFuncSpeedBackward1 = 0x40,
+  enMaerklin292xxIrFuncSpeedBackward2 = 0x50,
+  enMaerklin292xxIrFuncSpeedBackward3 = 0x60,
+  enMaerklin292xxIrFuncSpeedStop = 0x70,
 } en_maerklin_292xx_ir_func_t;
 
 typedef uint16_t maerklin_292xx_ir_code_t;
@@ -148,7 +157,10 @@ typedef struct stc_maerklin_292xx_ir_channelset
  */
 
 void Maerklin292xxIr_Init(void);
-void Maerklin292xxIr_Send(en_maerklin_292xx_ir_address_t enAddress, en_maerklin_292xx_ir_func_t enFunction);
+void Maerklin292xxIr_Send(en_maerklin_292xx_ir_address_t enAddress, uint8_t enFunction);
+void Maerklin292xxIr_SetSpeed(en_maerklin_292xx_ir_address_t enAddress, int speed);
+void Maerklin292xxIr_ToggleSoundLight(en_maerklin_292xx_ir_address_t enAddress, en_maerklin_292xx_ir_func_t enFunction);
+void Maerklin292xxIr_Update(void);
 
 //@} // Maerklin292xxIrGroup
 

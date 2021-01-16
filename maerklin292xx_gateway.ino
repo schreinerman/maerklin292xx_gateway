@@ -123,4 +123,5 @@ void loop() {
   IrGatewayWebServer_Update();
   Esp32Wifi_Update();
   IrGatewayWebServer_Update();
+  Maerklin292xxIr_Update();
 }
