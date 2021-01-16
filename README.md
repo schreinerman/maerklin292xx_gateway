@@ -34,7 +34,8 @@ See following list as reference (without warranty or guaranty)
 | Märklin 36101 Diesellokomotive BR 212                 | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/36100
 
 
-After upload to ATOM Lite, the locomotive can be controlled placed up to 10cm beside the IR sensor. An external IR transmitter diode can be used by chaning the GPIO channel in maerklin292xxir.h at ```#define MAERKLIN292XXIR_IR_PIN 12``` from 12 to your choice. For example chaning to 25 makes it possible to use some external IR transmitters for having a wide range conection at the bottom connector. Best is to use GND, 5V for the power supply of the IR transmitter. For example using: RM-024 LDTR
+
+After upload to ATOM Lite, the locomotive can be controlled placed up to 10cm beside the IR sensor. An external IR transmitter diode can be used by chaning the GPIO channel in maerklin292xxir.h at ```#define MAERKLIN292XXIR_IR_PIN 12``` from 12 to your choice. For example chaning to 25 makes it possible to use some external IR transmitters for having a wide range conection at the bottom connector. Best is to use GND, 5V for the power supply of the IR transmitter. For example using: RM-024 LDTR. See some example here: https://blog.io-expert.com/improving-ir-transmitter-at-atom-lite
 
 
 The ESP32 will initiate as SoftAP, but can be changed to Station mode, too.
