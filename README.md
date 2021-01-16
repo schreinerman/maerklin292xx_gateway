@@ -3,6 +3,8 @@ ESP32 WiFi to IR gateway for Märklin IR model trains for kids for example using
 
 Currently supported addresses A,B,C,D,G,H
 
+See following list as reference (without warranty or guaranty)
+
 | Name                                                  | Adresse       | Akku          | URL                                                           |
 |-------------------------------------------------------|---------------|---------------|---------------------------------------------------------------|
 | Märklin 29100	Nahverkehrszug LINT                     | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/29100
@@ -21,13 +23,13 @@ Currently supported addresses A,B,C,D,G,H
 | Märklin 29302 Intercity                               | C-D           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29302 
 | Märklin 29303 ICN                                     | C-D           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29303
 | Märklin 29304 TGV Lyria                               | A-B           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29304
-| Märklin 29306 TGV                                     | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29306
+| ~~Märklin 29306 TGV~~                                 | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29306
 | Märklin 29307 Airport Express - Hochbahn              | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/29307
-| Märklin 29308 Landwirtschaft                          | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29308
+| ~~Märklin 29308 Landwirtschaft~~                      | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29308
 | Märklin 29309 Güterzug                                | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/29309
-| Märklin 29330 ICE 3                                   | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29330
-| Märklin 29334 Italienischer Schnellzug                | M-N           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29334
-| Märklin 29335 Schweizer Schnellzug                    | M-N           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29335
+| ~~Märklin 29330 ICE 3~~                               | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29330
+| ~~Märklin 29334 Italienischer Schnellzug~~            | M-N           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29334
+| ~~Märklin 29335 Schweizer Schnellzug~~                | M-N           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29335
 | Märklin 36100 Nahverkehrszug LINT                     | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/36100
 | Märklin 36101 Diesellokomotive BR 212                 | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/36100
 
