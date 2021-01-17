@@ -412,7 +412,7 @@ void Maerklin292xxIr_Send(en_maerklin_292xx_ir_address_t enAddress, uint8_t enFu
     }
     irsend.sendRaw(codeCache,35,38);
     delay(10);
-    if ((enAddress & 0xf0) != 0)
+    if (enAddress <= enMaerklin292xxIrAddressD)
     {
       delay(200);
     }
