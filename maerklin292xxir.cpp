@@ -76,6 +76,24 @@
  ** |      |_______        |          |_____
  **  0.5ms   0.5ms           1.5ms    0.5ms
  **
+ ** locomotives addresses I-J:
+ ** ==========================
+ **  _____ ___                               ___ .........
+ ** |  S  | 1 |    7-bits + 7-bits inverted | 0 |. delay .
+ ** |     |___|_____________________________|___|.........
+ **  4.1ms  1             ...                 0  min. 20ms
+ **
+ **  bit   description
+ **  6     address 0 = G, 1 = H
+ **  5..3  speed
+ **  2..0  function
+ **
+ ** |<---- Low ---->|      |<---- High  ---->|
+ **  ______                 __________
+ ** |      |               |          | 
+ ** |      |_______        |          |_____
+ **  0.5ms   0.5ms           1.5ms    0.5ms
+ **
  ** History:
  ** - 2021-1-2  1.00  Manuel Schreiner
  *******************************************************************************
@@ -187,6 +205,7 @@ void Maerklin292xxIr_Send(en_maerklin_292xx_ir_address_t enAddress, uint8_t enFu
   static uint16_t u16Tmp = 0;
   uint8_t u8Command = 0;
   uint8_t u8Command2 = 0;
+  uint8_t u8Offset = 0;
   static stc_maerklin_292xx_ir_codeset_t* pLastCodeSet = 0;
   int i;
   if (debugMode)
@@ -313,14 +332,25 @@ void Maerklin292xxIr_Send(en_maerklin_292xx_ir_address_t enAddress, uint8_t enFu
   //
   //  Handle Locos type address G & H
   //
-  else if ((enAddress == enMaerklin292xxIrAddressG) || (enAddress == enMaerklin292xxIrAddressH))
+  else if ((enAddress == enMaerklin292xxIrAddressG) || (enAddress == enMaerklin292xxIrAddressH) || (enAddress == enMaerklin292xxIrAddressI) || (enAddress == enMaerklin292xxIrAddressJ))
   {
       codeCache[0] = 4100;
       codeCache[1] = 550;
       codeCache[30] = 1700;
+      codeCache[31] = 550;
+      codeCache[32] = 550;
+      codeCache[33] = 550;
       u8CommandLen = 15;
       u16Tmp = 0;
-      if (enAddress == enMaerklin292xxIrAddressH)
+      if ((enAddress == enMaerklin292xxIrAddressI) || (enAddress == enMaerklin292xxIrAddressJ))
+      {
+        u8Offset = 2;
+        u8CommandLen = 16;
+        codeCache[2] = 1500;
+        codeCache[3] = 550;
+        codeCache[30] = 550;
+      }
+      if ((enAddress == enMaerklin292xxIrAddressH) || (enAddress == enMaerklin292xxIrAddressJ))
       {
         u16Tmp |= (1 << 6);
       }
@@ -364,11 +394,11 @@ void Maerklin292xxIr_Send(en_maerklin_292xx_ir_address_t enAddress, uint8_t enFu
       {
         if ((u16Tmp & (1 << 13)) != 0) 
         {
-          codeCache[i*2 + 2] = 1500;
-          codeCache[i*2 + 3] = 550;
+          codeCache[i*2 + 2 + u8Offset] = 1500;
+          codeCache[i*2 + 3 + u8Offset] = 550;
         } else {
-          codeCache[i*2 + 2] = 550;
-          codeCache[i*2 + 3] = 550;
+          codeCache[i*2 + 2 + u8Offset] = 550;
+          codeCache[i*2 + 3 + u8Offset] = 550;
         }
         u16Tmp = u16Tmp << 1;
       }
@@ -420,6 +450,9 @@ void Maerklin292xxIr_Send(en_maerklin_292xx_ir_address_t enAddress, uint8_t enFu
   } else if (u8CommandLen == 15)
   {
     irsend.sendRaw(codeCache,29,38);
+  } else if (u8CommandLen == 16)
+  {
+    irsend.sendRaw(codeCache,33,38);
   }
 
   //

@@ -153,7 +153,7 @@ locomotives addresses I-J:
  4.1ms  1             ...                 0  min. 20ms
 
  bit   description
- 6     address 0 = G, 1 = H
+ 6     address 0 = I, 1 = J
  5..3  speed
  2..0  function
 

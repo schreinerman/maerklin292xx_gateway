@@ -89,6 +89,8 @@ typedef enum en_maerklin_292xx_ir_address
   enMaerklin292xxIrAddressD = 0x4,
   enMaerklin292xxIrAddressG = 0x7,
   enMaerklin292xxIrAddressH = 0x8,
+  enMaerklin292xxIrAddressI = 0x9,
+  enMaerklin292xxIrAddressJ = 0xa,
 } en_maerklin_292xx_ir_address_t;
 
 

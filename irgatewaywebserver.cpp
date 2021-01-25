@@ -108,6 +108,12 @@ static void processCommand(String channel, String command, String commandArg)
         } else if (channel == "H")
         {
            enIrAddress = enMaerklin292xxIrAddressH;
+        } else if (channel == "I")
+        {
+           enIrAddress = enMaerklin292xxIrAddressI;
+        } else if (channel == "J")
+        {
+           enIrAddress = enMaerklin292xxIrAddressJ;
         }
     }
     if (command == "sound")
