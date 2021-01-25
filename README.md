@@ -1,7 +1,7 @@
 # Maerklin 292xx Gateway for Arduino IDE and ESP32
 ESP32 WiFi to IR gateway for Märklin IR model trains for kids for example using ATOM Lite with TailBat from M5Stack.
 
-Currently supported addresses A,B,C,D,G,H
+Currently supported addresses A,B,C,D,G,H,I,J
 
 See following list as reference (without warranty or guaranty)
 
@@ -23,11 +23,11 @@ See following list as reference (without warranty or guaranty)
 | Märklin 29302 Intercity                               | C-D           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29302 
 | Märklin 29303 ICN                                     | C-D           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29303
 | Märklin 29304 TGV Lyria                               | A-B           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29304
-| ~~Märklin 29306 TGV~~                                 | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29306
+| Märklin 29306 TGV                                     | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29306
 | Märklin 29307 Airport Express - Hochbahn              | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/29307
-| ~~Märklin 29308 Landwirtschaft~~                      | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29308
+| Märklin 29308 Landwirtschaft                          | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29308
 | Märklin 29309 Güterzug                                | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/29309
-| ~~Märklin 29330 ICE 3~~                               | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29330
+| Märklin 29330 ICE 3                                   | I-J           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29330
 | ~~Märklin 29334 Italienischer Schnellzug~~            | M-N           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29334
 | ~~Märklin 29335 Schweizer Schnellzug~~                | M-N           | 4x AA         | https://www.maerklin.de/de/produkte/details/article/29335
 | Märklin 36100 Nahverkehrszug LINT                     | G-H           | USB/LiIon     | https://www.maerklin.de/de/produkte/details/article/36100
@@ -89,3 +89,77 @@ ESP32Wifi module
 handles setup of Station or SoftAP mode and going into sleep mode for station mode, so power can be saved
 
 See more information at: http://blog.io-expert.com/modernisiert-marklin-kinderspielzeug
+
+Protocols:
+----------
+
+```
+locomotives addresses A-B:
+==========================
+
+ _____             ......... _____             .........
+|  S  | 1st 8-bits . delay .|  S  | 2nd 8-bits . delay .
+|     |____________.........|     |____________.........
+ 20ms    2.5ms*8      45ms    20ms    2.5ms*8    200ms
+
+|<---- High ---->|   |<---- Low  ---->|
+ _____                 __________
+|     |               |          | 
+|     |__________     |          |_____
+ 0.6ms    1.7ms           1.7ms   0.6ms
+
+locomotives addresses C-D:
+==========================
+
+ _____             .........
+|  S  |   8-bits   . delay .
+|     |____________.........
+ 5.4ms    2.5ms*8    50ms
+
+ bit   description
+ 7     toggle bit
+ 6..4  command
+ 3..0  address, C: 0b0101, D: 0b1010
+
+|<---- High ---->|   |<---- Low  ---->|
+ _____                 __________
+|     |               |          | 
+|     |__________     |          |_____
+ 0.6ms    1.7ms           1.7ms   0.6ms
+
+locomotives addresses G-H:
+==========================
+ _____                              .........
+|  S  |   7-bits + 7-bits inverted  . delay .
+|     |_____________________________.........
+ 4.1ms              ...             min. 20ms
+
+ bit   description
+ 6     address 0 = G, 1 = H
+ 5..3  speed
+ 2..0  function
+
+|<---- Low ---->|      |<---- High  ---->|
+ ______                 __________
+|      |               |          | 
+|      |_______        |          |_____
+ 0.5ms   0.5ms           1.5ms    0.5ms
+
+locomotives addresses I-J:
+==========================
+ _____ ___                               ___ .........
+|  S  | 1 |    7-bits + 7-bits inverted | 0 |. delay .
+|     |___|_____________________________|___|.........
+ 4.1ms  1             ...                 0  min. 20ms
+
+ bit   description
+ 6     address 0 = G, 1 = H
+ 5..3  speed
+ 2..0  function
+
+|<---- Low ---->|      |<---- High  ---->|
+ ______                 __________
+|      |               |          | 
+|      |_______        |          |_____
+ 0.5ms   0.5ms           1.5ms    0.5ms
+ ```
