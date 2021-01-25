@@ -1,6 +1,8 @@
 # Maerklin 292xx Gateway for Arduino IDE and ESP32
 ESP32 WiFi to IR gateway for Märklin IR model trains for kids for example using ATOM Lite with TailBat from M5Stack.
 
+![IR Train Image](html/irtrain.png)
+
 Currently supported addresses A,B,C,D,G,H,I,J
 
 See following list as reference (without warranty or guaranty)
