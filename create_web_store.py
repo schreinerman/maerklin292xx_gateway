@@ -1,10 +1,10 @@
 import os
 
 strInitScript = "#if defined(ARDUINO_ARCH_ESP8266)\r\n"
-strInitScript = "  ESP8266WebServer* _pServer;\r\n"
-strInitScript = "#else\r\n"
-strInitScript = "  WebServer* _pServer;\r\n"
-strInitScript = "#endif\r\n"
+strInitScript += "  ESP8266WebServer* _pServer;\r\n"
+strInitScript += "#else\r\n"
+strInitScript += "  WebServer* _pServer;\r\n"
+strInitScript += "#endif\r\n"
 strInitScript += "#if defined(ARDUINO_ARCH_ESP8266)\r\n"
 strInitScript += "  void HtmlFs_Init(ESP8266WebServer* pServer)\r\n"
 strInitScript += "#else\r\n"

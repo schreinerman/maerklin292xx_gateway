@@ -1,5 +1,5 @@
-# Maerklin 292xx Gateway for Arduino IDE and ESP32
-ESP32 WiFi to IR gateway for Märklin IR model trains for kids for example using ATOM Lite with TailBat from M5Stack.
+# Maerklin 292xx Gateway for Arduino IDE and ESP32/ESP8266/ESP8285
+ESP32/ESP8266/ESP8285 WiFi to IR gateway for Märklin IR model trains for kids for example using ESP32 at ATOM Lite with TailBat from M5Stack.
 
 ![IR Train Image](html/irtrain.png)
 
