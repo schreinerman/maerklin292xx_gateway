@@ -36,11 +36,14 @@
  *******************************************************************************
  */
 
-
 #include "esp32wifi.h"
-#include <Arduino.h>
 
-#include <WiFi.h>
+
+#if defined(ARDUINO_ARCH_ESP8266)
+  #include <ESP8266WiFi.h>
+#else
+  #include <WiFi.h>
+#endif
 #include <WiFiClient.h>
 
 /**
@@ -114,7 +117,9 @@ void Esp32Wifi_Init(en_esp32_wifi_mode_t mode, const char* ssid, const char* pas
     _passwordStationMode = (char*)password;
     _ssidApMode = (char*)ssid;
     _passwordApMode = (char*)password;
-    esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR); // ESP32 wakes up every 5 seconds
+    #if !defined(ARDUINO_ARCH_ESP8266) //only available with ESP32
+        esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR); // ESP32 wakes up every 5 seconds
+    #endif
     Esp32Wifi_Connect();
 }
 
@@ -136,7 +141,9 @@ void Esp32Wifi_DualModeInit(const char* ssidStation, const char* passwordStation
     _passwordStationMode = (char*)passwordStation;
     _ssidApMode = (char*)ssidAp;
     _passwordApMode = (char*)passwordAp;
-    esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR); // ESP32 wakes up every 5 seconds
+    #if !defined(ARDUINO_ARCH_ESP8266) //only available with ESP32
+       esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR); // ESP32 wakes up every 5 seconds
+    #endif
     WiFi.disconnect();
     WiFi.mode(WIFI_STA);
     WiFi.begin(_ssidStationMode, _passwordStationMode);
@@ -245,7 +252,9 @@ void Esp32Wifi_Update(void)
         //Serial.flush(); 
         if (_mode == enESP32WifiModeStation) 
         {
-          esp_light_sleep_start();
+          #if !defined(ARDUINO_ARCH_ESP8266) //only available with ESP32
+              esp_light_sleep_start();
+          #endif
         }
         //Serial.println("wake");
         Esp32Wifi_Connect();

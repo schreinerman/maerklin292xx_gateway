@@ -38,18 +38,31 @@
  ** Include files
  *******************************************************************************
  */
+#define USE_ESP8266 1
 
 #include <Arduino.h>
 #include <IRremoteESP8266.h>
 
-#include <WiFi.h>
+#if defined(ARDUINO_ARCH_ESP8266)
+  #include <ESP8266WiFi.h>
+#else
+  #include <WiFi.h>
+#endif
 #include <WiFiClient.h>
-#include <WebServer.h>
-#include <ESPmDNS.h>
+
+#if defined(ARDUINO_ARCH_ESP8266)
+  #include <ESP8266WebServer.h>
+  #include <ESP8266mDNS.h>
+#else
+  #include <WebServer.h>
+  #include <ESPmDNS.h>
+#endif
+
 
 #include "esp32wifi.h"
 #include "maerklin292xxir.h"
 #include "irgatewaywebserver.h"
+#include "appconfig.h"
 
 /**
  *******************************************************************************
@@ -75,12 +88,17 @@
  ** Local variable definitions ('static') 
  *******************************************************************************
  */
-
+    
 const char *ssidAp = "Maerklin292xxGateway";
 const char *passwordAp = "Maerklin292xxGateway";
-const char *ssidStation = "MyLocalWifi";
-const char *passwordStation = "MyLocalWifiPassword";
+//const char *ssidStation = "MyWifi";           --> Moved to appconfig.h, INITIAL_SSID_STATION_MODE, use http://maerklin292xx-gateway.local/config/ to configure
+//const char *passwordStation = "MyPassword";   --> Moved to appconfig.h, INITIAL_PASSORD_STATION_MODE, use http://maerklin292xx-gateway.local/config/ to configure
 const en_maerklin_292xx_ir_address_t enIrChannelAddress = enMaerklin292xxIrAddressC;
+#if defined(ARDUINO_ARCH_ESP8266)
+static ESP8266WebServer server(80);
+#else
+static WebServer server(80);
+#endif
 
 /**
  *******************************************************************************
@@ -99,21 +117,33 @@ void setup() {
 
   //intiate serial port
   Serial.begin(115200);
+  Serial.println("");
+  Serial.println("Welcome to maerklin292xx gateway");
+  
 
+  AppConfig_Init(&server);
+  
   Maerklin292xxIr_Init();
 
   //initiate WIFI
-  Esp32Wifi_DualModeInit(ssidStation,passwordStation,ssidAp,passwordAp);
+  Esp32Wifi_DualModeInit((char*)AppConfig_GetStaSsid(),(char*)AppConfig_GetStaPassword(),ssidAp,passwordAp);
                                                                   
   Serial.println("");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
-  if (MDNS.begin("maerklin292xx_gateway")) {
+  #if defined(ARDUINO_ARCH_ESP8266)
+      WiFi.hostname("maerklin292xx-gateway");
+  #endif
+  
+
+  if (MDNS.begin("maerklin292xx-gateway")) {
     Serial.println("MDNS responder started");
   }
 
-  IrGatewayWebServer_Init(enIrChannelAddress);
+  IrGatewayWebServer_Init(&server,enIrChannelAddress);
+
+  MDNS.addService("http", "tcp", 80);
 }
 
 

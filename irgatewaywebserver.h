@@ -31,11 +31,11 @@
 #if !defined(__IRGATEWAYWEBSERVER_H__)
 #define __IRGATEWAYWEBSERVER_H__
 
-/* C binding of definitions if building with C++ compiler */
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+///* C binding of definitions if building with C++ compiler */
+//#ifdef __cplusplus
+//extern "C"
+//{
+//#endif
 
 /**
  *******************************************************************************
@@ -68,6 +68,12 @@ extern "C"
 
 #include <stdint.h>
 #include "maerklin292xxir.h"
+#include "Arduino.h"
+#if defined(ARDUINO_ARCH_ESP8266)
+  #include <ESP8266WebServer.h>
+#else
+  #include <WebServer.h>
+#endif
 
 /**
  *******************************************************************************
@@ -95,14 +101,19 @@ extern "C"
  *******************************************************************************
  */
 
-void IrGatewayWebServer_Init(en_maerklin_292xx_ir_address_t enIrChannelAddress);
+#if defined(ARDUINO_ARCH_ESP8266)
+  void IrGatewayWebServer_Init(ESP8266WebServer* pWebServer, en_maerklin_292xx_ir_address_t enIrChannelAddress);
+#else
+  void IrGatewayWebServer_Init(WebServer* pWebServer, en_maerklin_292xx_ir_address_t enIrChannelAddress);
+#endif
+
 void IrGatewayWebServer_Update(void);
 
 //@} // IrGatewayWebServerGroup
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 #endif /* __IRGATEWAYWEBSERVER_H__ */
 

@@ -17,7 +17,7 @@
 
 /**
  *******************************************************************************
- **\file irgatewaywebserver.c
+ **\file irgatewaywebpServer->c
  **
  ** WebServer used as IR gateway
  ** A detailed description is available at
@@ -36,10 +36,20 @@
  *******************************************************************************
  */
 
-#include <Arduino.h>
-#include <WiFi.h>
+#if defined(ARDUINO_ARCH_ESP8266)
+  #include <ESP8266WiFi.h>
+  #define WebServer ESP8266WebServer
+#else
+  #include <WiFi.h>
+#endif
 #include <WiFiClient.h>
-#include <WebServer.h>
+#if defined(ARDUINO_ARCH_ESP8266)
+  #include <ESP8266WebServer.h>
+  #include <ESP8266HTTPUpdateServer.h>
+  #include <uri/UriBraces.h>
+#else
+  #include <WebServer.h>
+#endif
 #include "irgatewaywebserver.h"
 #include "htmlfs.h"
 #include "esp32wifi.h"
@@ -69,7 +79,18 @@
  ** Local variable definitions ('static') 
  *******************************************************************************
  */
-static WebServer server(80);
+ 
+const char* update_path = "/firmware";
+const char* update_username = "admin";
+const char* update_password = "admin";
+
+#if defined(ARDUINO_ARCH_ESP8266)
+static ESP8266WebServer* pServer;
+static ESP8266HTTPUpdateServer httpUpdater;
+#else
+static WebServer* pServer;
+#endif
+
 static en_maerklin_292xx_ir_address_t enIrAddress = enMaerklin292xxIrAddressA;
 /**
  *******************************************************************************
@@ -148,7 +169,7 @@ static void processCommand(String channel, String command, String commandArg)
     {
         //Serial.println("k");
     }
-    server.send(200, "text/plain", "done");
+    pServer->send(200, "text/plain", "done");
 }
 
 /*
@@ -156,44 +177,61 @@ static void processCommand(String channel, String command, String commandArg)
  * 
  * \param enIrChannelAddress default IR channel
  */
-void IrGatewayWebServer_Init(en_maerklin_292xx_ir_address_t enIrChannelAddress)
+void IrGatewayWebServer_Init(WebServer* pWebServer, en_maerklin_292xx_ir_address_t enIrChannelAddress)
 {
+  pServer = pWebServer;
   enIrAddress = enIrChannelAddress;
-  HtmlFs_Init(&server);
+  
 
-  server.on("/cmd/{}/{}/{}", []() {
-    String channel = server.pathArg(0);
-    String cmd = server.pathArg(1);
-    String cmdArgs = server.pathArg(2);
+  #if defined(ARDUINO_ARCH_ESP8266)
+    pServer->on(UriBraces("/cmd/{}/{}/{}"), []() {
+  #else
+    pServer->on("/cmd/{}/{}/{}", []() {
+  #endif
+    String channel = pServer->pathArg(0);
+    String cmd = pServer->pathArg(1);
+    String cmdArgs = pServer->pathArg(2);
     processCommand(channel,cmd,cmdArgs);
   });
 
-  server.on("/cmd/{}/{}", []() {
-    String channel = server.pathArg(0);
-    String cmd = server.pathArg(1);
+  #if defined(ARDUINO_ARCH_ESP8266)
+    pServer->on(UriBraces("/cmd/{}/{}"), []() {
+  #else
+    pServer->on("/cmd/{}/{}", []() {
+  #endif
+    String channel = pServer->pathArg(0);
+    String cmd = pServer->pathArg(1);
     String cmdArgs = "";
     if (!((channel.charAt(0) >= 'A') && (channel.charAt(0) <= 'Z')))
     {
        channel = "";
-       cmd = server.pathArg(0);
-       cmdArgs = server.pathArg(1);
+       cmd = pServer->pathArg(0);
+       cmdArgs = pServer->pathArg(1);
     }
     processCommand(channel,cmd,cmdArgs);
   });
 
-  server.on("/cmd/{}", []() {
-    String cmd = server.pathArg(0);
+  #if defined(ARDUINO_ARCH_ESP8266)
+    pServer->on(UriBraces("/cmd/{}"), []() {
+  #else
+    pServer->on("/cmd/{}", []() {
+  #endif
+    String cmd = pServer->pathArg(0);
     Esp32Wifi_KeepAlive();
     if (cmd == "keepalive")
     {
-        server.send(200, "text/plain", "keep alive accepted");
+        pServer->send(200, "text/plain", "keep alive accepted");
     } else
     {
         processCommand("",cmd,"");
     } 
   });
-  
-  server.begin();
+
+  HtmlFs_Init(pServer);
+  #if defined(ARDUINO_ARCH_ESP8266)
+      httpUpdater.setup(pServer, update_path, update_username, update_password);
+  #endif
+  pServer->begin();
   //Serial.println("HTTP server started");
 }
 
@@ -202,7 +240,7 @@ void IrGatewayWebServer_Init(en_maerklin_292xx_ir_address_t enIrChannelAddress)
  */
 void IrGatewayWebServer_Update(void)
 {
-    server.handleClient();
+    pServer->handleClient();
 }
 /**
  *******************************************************************************

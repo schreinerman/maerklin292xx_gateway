@@ -112,6 +112,7 @@
 #include "maerklin292xxir.h"
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
+#include "AppConfig.h"
 
 /**
  *******************************************************************************
@@ -137,9 +138,8 @@
  *******************************************************************************
  */
 
-static uint16_t codeCache[100];
-static const uint16_t kIrLed = MAERKLIN292XXIR_IR_PIN; 
-static IRsend irsend(kIrLed);  // Set the GPIO to be used to sending the message.
+static uint16_t codeCache[40];
+static IRsend irsend(AppConfig_GetIrGpio());  // Set the GPIO to be used to sending the message.
 static const stc_maerklin_292xx_ir_channelset_t stcChannelSetA = {
   {0x77,0x77}, //stop
   {0x1e59,0xe9b3}, //backward

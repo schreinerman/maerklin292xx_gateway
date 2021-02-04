@@ -17,19 +17,19 @@
 
 /**
  *******************************************************************************
- **\file esp32wifi.c
+ **\file webconfig.c
  **
- ** Handle WiFi
+ ** Web Configuration
  ** A detailed description is available at
- ** @link ESP32WifiGroup file description @endlink
+ ** @link WebConfigGroup file description @endlink
  **
  ** History:
- ** - 2021-1-2  1.00  Manuel Schreiner
+ ** - 2021-2-3  1.00  Manuel Schreiner
  *******************************************************************************
  */
 
-#if !defined(__ESP32WIFI_H__)
-#define __ESP32WIFI_H__
+#if !defined(__WEBCONFIG_H__)
+#define __WEBCONFIG_H__
 
 /* C binding of definitions if building with C++ compiler */
 //#ifdef __cplusplus
@@ -39,9 +39,9 @@
 
 /**
  *******************************************************************************
- ** \defgroup ESP32WifiGroup Handle WiFi
+ ** \defgroup WebConfigGroup Web Configuration
  **
- ** Provided functions of ESP32Wifi:
+ ** Provided functions of WebConfig:
  **
  **
  *******************************************************************************
@@ -51,10 +51,10 @@
 
 /**
  *******************************************************************************
-** \page esp32wifi_module_includes Required includes in main application
+** \page webconfig_module_includes Required includes in main application
 ** \brief Following includes are required
 ** @code
-** #include "esp32wifi.h"
+** #include "webconfig.h"
 ** @endcode
 **
  *******************************************************************************
@@ -66,7 +66,13 @@
  *******************************************************************************
  */
 
-#include <stdint.h>
+#include "stdint.h"
+//#include <Arduino.h>
+#if defined(ARDUINO_ARCH_ESP8266)
+  #include <ESP8266WebServer.h>
+#else
+  #include <WebServer.h>
+#endif
 
 /**
  *******************************************************************************
@@ -80,11 +86,36 @@
  *******************************************************************************
  */
 
-typedef enum en_esp32_wifi_mode
+typedef enum en_webconfig_type
 {
-  enESP32WifiModeSoftAP = 0,
-  enESP32WifiModeStation = 1
-} en_esp32_wifi_mode_t;
+  enWebConfigTypeStringLen32 = 0xF0,
+  enWebConfigTypeStringLen64 = 0xF1,
+  enWebConfigTypeStringLen128 = 0xF2,
+  enWebConfigTypeUInt8 = 0x01,
+  enWebConfigTypeInt8 = 0x11,
+  enWebConfigTypeUInt16 = 0x02,
+  enWebConfigTypeInt16 = 0x12,
+  enWebConfigTypeUInt32 = 0x04,
+  enWebConfigTypeInt32 = 0x14,
+  enWebConfigTypeUInt64 = 0x08,
+  enWebConfigTypeInt64 = 0x18,
+  enWebConfigTypeBool = 0x21
+} en_webconfig_type_t;
+
+typedef struct stc_webconfig_description
+{
+  const en_webconfig_type_t type; 
+  const char* name;
+  const char* description;
+} stc_webconfig_description_t;
+
+typedef struct stc_webconfig_handle
+{
+    uint8_t* pu8Data;
+    uint32_t u32DataSize;
+    uint32_t ItemCount;
+    stc_webconfig_description_t* astcData;
+} stc_webconfig_handle_t;
 
 /**
  *******************************************************************************
@@ -98,19 +129,19 @@ typedef enum en_esp32_wifi_mode
  *******************************************************************************
  */
 
-void Esp32Wifi_Init(en_esp32_wifi_mode_t mode, const char* ssid, const char* password);
-void Esp32Wifi_DualModeInit(const char* ssidStation, const char* passwordStation, const char* ssidAp, const char* passwordAp);
-void Esp32Wifi_Connect(void);
-void Esp32Wifi_Update(void);
-void Esp32Wifi_KeepAlive(void);
+#if defined(ARDUINO_ARCH_ESP8266)
+void WebConfig_Init(ESP8266WebServer* pWebServerHandle, stc_webconfig_handle_t* pstcHandle);
+#else
+void WebConfig_Init(WebServer* pWebServerHandle, stc_webconfig_handle_t* pstcHandle);
+#endif
 
-//@} // ESP32WifiGroup
+//@} // WebConfigGroup
 
 //#ifdef __cplusplus
 //}
 //#endif
 
-#endif /* __ESP32WIFI_H__ */
+#endif /* __WEBCONFIG_H__ */
 
 /**
  *******************************************************************************

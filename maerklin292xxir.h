@@ -74,7 +74,7 @@ extern "C"
  *******************************************************************************
  */
 
-#define MAERKLIN292XXIR_IR_PIN 12
+//#define MAERKLIN292XXIR_IR_PIN 4 //Moved to appconfig.h, INITIAL_GPIO_IR, use http://maerklin292xx-gateway.local/config/ to configure GPIO pin usage
 /**
  *******************************************************************************
  ** Global type definitions ('typedef') 

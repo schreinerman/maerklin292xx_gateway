@@ -17,19 +17,19 @@
 
 /**
  *******************************************************************************
- **\file esp32wifi.c
+ **\file appconfig.c
  **
- ** Handle WiFi
+ ** App Configuration
  ** A detailed description is available at
- ** @link ESP32WifiGroup file description @endlink
+ ** @link AppConfigGroup file description @endlink
  **
  ** History:
- ** - 2021-1-2  1.00  Manuel Schreiner
+ ** - 2021-2-3  1.00  Manuel Schreiner
  *******************************************************************************
  */
 
-#if !defined(__ESP32WIFI_H__)
-#define __ESP32WIFI_H__
+#if !defined(__APPCONFIG_H__)
+#define __APPCONFIG_H__
 
 /* C binding of definitions if building with C++ compiler */
 //#ifdef __cplusplus
@@ -39,9 +39,9 @@
 
 /**
  *******************************************************************************
- ** \defgroup ESP32WifiGroup Handle WiFi
+ ** \defgroup AppConfigGroup App Configuration
  **
- ** Provided functions of ESP32Wifi:
+ ** Provided functions of AppConfig:
  **
  **
  *******************************************************************************
@@ -51,10 +51,10 @@
 
 /**
  *******************************************************************************
-** \page esp32wifi_module_includes Required includes in main application
+** \page appconfig_module_includes Required includes in main application
 ** \brief Following includes are required
 ** @code
-** #include "esp32wifi.h"
+** #include "appconfig.h"
 ** @endcode
 **
  *******************************************************************************
@@ -66,7 +66,8 @@
  *******************************************************************************
  */
 
-#include <stdint.h>
+#include "stdint.h"
+#include "webconfig.h"
 
 /**
  *******************************************************************************
@@ -74,17 +75,27 @@
  *******************************************************************************
  */
 
+#define INITIAL_SSID_STATION_MODE "MyWifi"
+#define INITIAL_PASSORD_STATION_MODE "MyPassword"
+#if defined(ARDUINO_ARCH_ESP8266)
+#define INITIAL_GPIO_IR 4
+#else
+#define INITIAL_GPIO_IR 12
+#endif
+
 /**
  *******************************************************************************
  ** Global type definitions ('typedef') 
  *******************************************************************************
  */
 
-typedef enum en_esp32_wifi_mode
+typedef struct stc_appconfig
 {
-  enESP32WifiModeSoftAP = 0,
-  enESP32WifiModeStation = 1
-} en_esp32_wifi_mode_t;
+  char ssidStation[32];
+  char passwordStation[32];
+  uint32_t gpioIRLED;
+  uint32_t u32magic;
+} stc_appconfig_t;
 
 /**
  *******************************************************************************
@@ -98,19 +109,26 @@ typedef enum en_esp32_wifi_mode
  *******************************************************************************
  */
 
-void Esp32Wifi_Init(en_esp32_wifi_mode_t mode, const char* ssid, const char* password);
-void Esp32Wifi_DualModeInit(const char* ssidStation, const char* passwordStation, const char* ssidAp, const char* passwordAp);
-void Esp32Wifi_Connect(void);
-void Esp32Wifi_Update(void);
-void Esp32Wifi_KeepAlive(void);
+#if defined(ARDUINO_ARCH_ESP8266)
+void AppConfig_Init(ESP8266WebServer* pWebServerHandle);
+#else
+void AppConfig_Init(WebServer* pWebServerHandle);
+#endif
+void AppConfig_Write(void);
+char* AppConfig_GetStaSsid(void);
+char* AppConfig_GetStaPassword(void);
+uint32_t AppConfig_GetIrGpio(void);
+void AppConfig_SetStaSsid(char* ssid);
+void AppConfig_SetStaPassword(char* pass);
+void AppConfig_SetIrGpio(uint32_t u32Gpio);
 
-//@} // ESP32WifiGroup
+//@} // AppConfigGroup
 
 //#ifdef __cplusplus
 //}
 //#endif
 
-#endif /* __ESP32WIFI_H__ */
+#endif /* __APPCONFIG_H__ */
 
 /**
  *******************************************************************************
