@@ -18,7 +18,6 @@ strInitScript += "    });\r\n"
 htmlFsFile = open('htmlfs.cpp', 'w') 
 htmlFsFile.write("#include \"htmlfs.h\"\r\n")
 htmlFsFile.write("#include <stdint.h>\r\n")
-htmlFsFile.write("#include <WebServer.h>\r\n")
 htmlFsFile.write("#include <Arduino.h>\r\n")
 htmlFsFile.write("#if defined(ARDUINO_ARCH_ESP8266)\r\n")
 htmlFsFile.write("  #include <ESP8266WebServer.h>\r\n")
