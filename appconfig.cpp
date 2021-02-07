@@ -40,9 +40,13 @@
 #include "stdint.h"
 #include "appconfig.h"
 #include "webconfig.h"
+#include "FS.h"
+#include "SPIFFS.h"
 #include <EEPROM.h>
- #if defined(ARDUINO_ARCH_ESP32)
-
+#if defined(ARDUINO_ARCH_ESP32)
+#include "soc/rtc_wdt.h"
+#include "esp_int_wdt.h"
+#include "esp_task_wdt.h"
 #endif
 
 /**
@@ -50,6 +54,9 @@
  ** Local pre-processor symbols/macros ('#define') 
  *******************************************************************************
  */
+ 
+#define FORMAT_SPIFFS_IF_FAILED true
+#define USE_SPIFFS
 
 /**
  *******************************************************************************
@@ -66,8 +73,8 @@ stc_appconfig_t stcAppConfig = {
 };
 
 stc_webconfig_description_t astcAppConfigDescription[] = {
-    {enWebConfigTypeStringLen32,"ssid","SSID Wifi Router"},
-    {enWebConfigTypeStringLen32,"password","Password Wifi Router"},
+    {enWebConfigTypeStringLen32,"ssid","Wifi SSID"},
+    {enWebConfigTypeStringLen32,"password","Wifi Password"},
     {enWebConfigTypeUInt32,"gpioir","GPIO IR LED"}
 };
 
@@ -105,6 +112,58 @@ static bool bLockWrite = false;
  *******************************************************************************
  */
 
+static bool InitData()
+{
+  static bool bInitalized = false;
+  if (!bInitalized)
+  {
+    #if defined(USE_SPIFFS)
+      if (SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED))
+      {
+        bInitalized = true;
+      } else
+      {
+        SPIFFS.format();
+        if (SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED))
+        {
+          bInitalized = true;
+        }
+      }
+    #else
+      EEPROM.begin(512);
+      bInitalized = true;
+    #endif
+  }
+  return bInitalized;
+}
+static void ReadData()
+{
+  #if defined(USE_SPIFFS)
+    if (SPIFFS.exists("/config.bin"))
+    {
+      File file = SPIFFS.open("/config.bin",FILE_READ);
+      file.readBytes((char*)&stcAppConfig,sizeof(stcAppConfig));
+      file.close();
+    }
+  #else
+    EEPROM.get(0,stcAppConfig);
+  #endif
+}
+
+static void WriteData()
+{
+  #if defined(USE_SPIFFS)
+    File file = SPIFFS.open("/config.bin",FILE_WRITE);
+    if(file){
+      file.write((uint8_t*)&stcAppConfig,sizeof(stcAppConfig));
+      file.close();
+    }
+  #else
+    EEPROM.put(0,stcAppConfig);
+    EEPROM.commit();
+  #endif
+}
+
 /*********************************************
  * Init App Configuration
  * 
@@ -120,9 +179,17 @@ void AppConfig_Init(WebServer* pWebServerHandle)
 {
   if (bInitDone == false)
   {
-    EEPROM.begin(512);
-    EEPROM.get(0,stcAppConfig);
     bInitDone = true;
+    memset(&stcAppConfig,0,sizeof(stcAppConfig));
+    if (InitData())
+    {
+      
+    }
+    else
+    {
+      return;
+    }
+    ReadData();
     if (stcAppConfig.u32magic != 0xCFDFAABB)
     {
       bLockWrite = true;
@@ -154,17 +221,9 @@ void AppConfig_Write(void)
   {
     bLockWrite = true;
     Serial.println("Updating App Configuration...");
-    #if defined(ARDUINO_ARCH_ESP32)
-      portMUX_TYPE myMutex = portMUX_INITIALIZER_UNLOCKED;
-      taskENTER_CRITICAL(&myMutex);
-    #endif
-    noInterrupts();
-    EEPROM.put(0,stcAppConfig);
-    EEPROM.commit();
-    interrupts();
-    #if defined(ARDUINO_ARCH_ESP32)
-      taskEXIT_CRITICAL(&myMutex);
-    #endif
+
+    WriteData();
+    
     bLockWrite = false;
   }
 }

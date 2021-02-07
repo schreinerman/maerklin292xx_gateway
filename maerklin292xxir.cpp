@@ -139,7 +139,7 @@
  */
 
 static uint16_t codeCache[40];
-static IRsend irsend(AppConfig_GetIrGpio());  // Set the GPIO to be used to sending the message.
+static IRsend irsend = IRsend(99);
 static const stc_maerklin_292xx_ir_channelset_t stcChannelSetA = {
   {0x77,0x77}, //stop
   {0x1e59,0xe9b3}, //backward
@@ -186,6 +186,7 @@ static bool debugMode = true;
 void Maerklin292xxIr_Init(void)
 {
   //initiate IR library
+  irsend = IRsend(AppConfig_GetIrGpio());  // Set the GPIO to be used to sending the message.
   irsend.begin(); 
 }
 

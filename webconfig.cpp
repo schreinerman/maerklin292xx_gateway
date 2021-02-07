@@ -225,8 +225,20 @@ static void handleConfig() {
   "<html>"
   "<head>"
   "<title>App Configuration</title>"
+  "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\">"
+  "<link rel=\"stylesheet\" href=\"/site.css\">"
   "</head>"
-  "<body>"
+  "<body width=300px>"
+  "<div class=\"bar\">"
+  "<div class=\"topcornerleft\">"
+  "<a href=\"/\">"
+  "<svg class=mdi-icon-32 viewBox=\"0 0 32 32\">"
+  "  <path fill=\"currentColor\" d=\"M2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12M18,11H10L13.5,7.5L12.08,6.08L6.16,12L12.08,17.92L13.5,16.5L10,13H18V11Z\" />"
+  "</svg>"
+  "</a></div>"
+  "<div class=\"title\"><script>document.write(document.title);</script></div>"
+  "</div>"
+  "<div class=\"formular\">"
   "<form method=\"post\" enctype=\"application/x-www-form-urlencoded\" action=\"/postform/\">"
   "<table>";
   
@@ -236,9 +248,10 @@ static void handleConfig() {
     postForms += "value=\"" + typeToString(pstcWebConfig->astcData[i].type,pstcWebConfig->pu8Data,&dataPos) + "\" ";
     postForms += "name=\"" + String(pstcWebConfig->astcData[i].name) + "\"></td></tr>";
   }
-  postForms += "<tr><td>&nbsp;</td><td><input type=\"submit\" value=\"Submit\"></td></tr>"
+  postForms += "<tr><td>&nbsp;</td><td align=right><input type=\"submit\" value=\"Save\"></td></tr>"
   "</table>"
   "</form>"
+  "</div>"
   "</body>"
   "</html>";
   _pServer->send(200,"text/html",postForms);

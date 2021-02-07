@@ -91,8 +91,10 @@
     
 const char *ssidAp = "Maerklin292xxGateway";
 const char *passwordAp = "Maerklin292xxGateway";
+const char *hostName = "maerklin-ir-gateway";
 //const char *ssidStation = "MyWifi";           --> Moved to appconfig.h, INITIAL_SSID_STATION_MODE, use http://maerklin292xx-gateway.local/config/ to configure
 //const char *passwordStation = "MyPassword";   --> Moved to appconfig.h, INITIAL_PASSORD_STATION_MODE, use http://maerklin292xx-gateway.local/config/ to configure
+
 const en_maerklin_292xx_ir_address_t enIrChannelAddress = enMaerklin292xxIrAddressC;
 #if defined(ARDUINO_ARCH_ESP8266)
 static ESP8266WebServer server(80);
@@ -133,11 +135,13 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   #if defined(ARDUINO_ARCH_ESP8266)
-      WiFi.hostname("maerklin292xx-gateway");
+      WiFi.hostname(hostName);
+  #else
+     WiFi.setHostname(hostName);
   #endif
   
 
-  if (MDNS.begin("maerklin292xx-gateway")) {
+  if (MDNS.begin(hostName)) {
     Serial.println("MDNS responder started");
   }
 
