@@ -40,23 +40,26 @@
 #include "stdint.h"
 #include "appconfig.h"
 #include "webconfig.h"
+
+#if defined(ARDUINO_ARCH_ESP8266)
+#include <EEPROM.h>
+#else
 #include "FS.h"
 #include "SPIFFS.h"
-#include <EEPROM.h>
-#if defined(ARDUINO_ARCH_ESP32)
-#include "soc/rtc_wdt.h"
-#include "esp_int_wdt.h"
-#include "esp_task_wdt.h"
+#define USE_SPIFFS
 #endif
+
 
 /**
  *******************************************************************************
  ** Local pre-processor symbols/macros ('#define') 
  *******************************************************************************
  */
- 
+
+#pragma GCC optimize ("-O3")
+
 #define FORMAT_SPIFFS_IF_FAILED true
-#define USE_SPIFFS
+
 
 /**
  *******************************************************************************
@@ -181,11 +184,7 @@ void AppConfig_Init(WebServer* pWebServerHandle)
   {
     bInitDone = true;
     memset(&stcAppConfig,0,sizeof(stcAppConfig));
-    if (InitData())
-    {
-      
-    }
-    else
+    if (!InitData())
     {
       return;
     }
