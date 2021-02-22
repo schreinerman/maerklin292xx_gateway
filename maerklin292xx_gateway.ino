@@ -20,16 +20,23 @@
  *******************************************************************************
  **\file maerklin29210_gateway.ino
  **
- ** ESP32 WiFi to IR gateway for Märklin 29210
+ ** ESP8266 / ESP32 WiFi to IR gateway for Märklin IR 
  **
- ** Set WiFi ssidAp, passwordAp for the Accesspoint to be generated
+ ** First Startup with
  ** Default SSID: Maerklin292xxGateway, Password: Maerklin292xxGateway
+ ** DNS: http://maerklin-ir-gateway.local or via IP http://192.168.4.1 
  **
- ** Set ssidStation and passwordStation to log into your local Wifi.
- ** If the local wifi can't be reached, an access point will be created
+ ** To log into your local Wifi, change settings at http://maerklin-ir-gateway.local/config
+ ** If the local wifi can't be reached, an access point Maerklin292xxGateway will be created again
+ **
+ ** Different IR GPIO setups can be configured as well at http://maerklin-ir-gateway.local/config
  **   
  ** History:
- ** - 2021-1-2  1.00  Manuel Schreiner
+ ** - 2021-01-02  1.00  Manuel Schreiner  First Release
+ ** - 2021-02-07  1.10  Manuel Schreiner  Configuration page was added
+ ** - 2021-02-22  1.21  Manuel Schreiner  Added WiThrottle Server
+ **                                       Added Firmware Update via /firmware
+ **                                       Added user LED / button feature
  *******************************************************************************
  */
 
@@ -38,24 +45,27 @@
  ** Include files
  *******************************************************************************
  */
-#define USE_ESP8266 1
 
 #include <Arduino.h>
 #include <IRremoteESP8266.h>
 
 #if defined(ARDUINO_ARCH_ESP8266)
   #include <ESP8266WiFi.h>
-#else
+#elif defined(ARDUINO_ARCH_ESP32)
   #include <WiFi.h>
+#else
+#error Not supported architecture
 #endif
 #include <WiFiClient.h>
 
 #if defined(ARDUINO_ARCH_ESP8266)
   #include <ESP8266WebServer.h>
   #include <ESP8266mDNS.h>
-#else
+#elif defined(ARDUINO_ARCH_ESP32)
   #include <WebServer.h>
   #include <ESPmDNS.h>
+#else
+#error Not supported architecture
 #endif
 
 
@@ -63,6 +73,10 @@
 #include "maerklin292xxir.h"
 #include "irgatewaywebserver.h"
 #include "appconfig.h"
+#include "withrottle.h"
+#include "espwebupdater.h"
+#include "userledbutton.h"
+#include "locodatabase.h"
 
 /**
  *******************************************************************************
@@ -100,8 +114,8 @@ const char *hostName = "maerklin-ir-gateway";
 const en_maerklin_292xx_ir_address_t enIrChannelAddress = enMaerklin292xxIrAddressC;
 #if defined(ARDUINO_ARCH_ESP8266)
 static ESP8266WebServer server(80);
-#else
-static WebServer server(80);
+#elif defined(ARDUINO_ARCH_ESP32)
+static WebServer webServer(80);
 #endif
 
 /**
@@ -123,11 +137,14 @@ void setup() {
   Serial.begin(115200);
   Serial.println("");
   Serial.println("Welcome to maerklin292xx gateway");
-  
 
   AppConfig_Init(&server);
+
+  UserLedButton_Init();
   
   Maerklin292xxIr_Init();
+
+  LocoDatabase_Init();
 
   //initiate WIFI
   Esp32Wifi_DualModeInit((char*)AppConfig_GetStaSsid(),(char*)AppConfig_GetStaPassword(),ssidAp,passwordAp);
@@ -137,8 +154,8 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   #if defined(ARDUINO_ARCH_ESP8266)
-      WiFi.hostname(hostName);
-  #else
+     WiFi.hostname(hostName);
+  #elif defined(ARDUINO_ARCH_ESP32)
      WiFi.setHostname(hostName);
   #endif
   
@@ -146,18 +163,29 @@ void setup() {
   if (MDNS.begin(hostName)) {
     Serial.println("MDNS responder started");
   }
-
-  IrGatewayWebServer_Init(&server,enIrChannelAddress);
-
+  
+  EspWebUpdater_Init(&webServer);
+  
+  IrGatewayWebServer_Init(&webServer,enIrChannelAddress);
+  
+  webServer.begin();
   MDNS.addService("http", "tcp", 80);
+  MDNS.addService("irgateway","tcp",80);
+  MDNS.addService("withrottle", "tcp", 2560);
+
+  WiThrottle_Init();
 }
 
 
 
 void loop() {
   // put your main code here, to run repeatedly:
+  #if defined(ARDUINO_ARCH_ESP8266)
+  MDNS.update();
+  #endif
   IrGatewayWebServer_Update();
   Esp32Wifi_Update();
   IrGatewayWebServer_Update();
   Maerklin292xxIr_Update();
+  WiThrottle_Update();
 }
