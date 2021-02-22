@@ -138,7 +138,7 @@ void setup() {
   Serial.println("");
   Serial.println("Welcome to maerklin292xx gateway");
 
-  AppConfig_Init(&server);
+  AppConfig_Init(&webServer);
 
   UserLedButton_Init();
   
