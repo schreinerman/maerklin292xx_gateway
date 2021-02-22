@@ -75,12 +75,15 @@
  *******************************************************************************
  */
 
+#define APP_VERSION "V1.2.1"
 #define INITIAL_SSID_STATION_MODE "MyWifi"
 #define INITIAL_PASSORD_STATION_MODE "MyPassword"
 #if defined(ARDUINO_ARCH_ESP8266)
 #define INITIAL_GPIO_IR 4
-#else
+#elif defined(ARDUINO_ARCH_ESP32)
 #define INITIAL_GPIO_IR 12
+#else
+#error Not supported architecture
 #endif
 
 /**
@@ -94,7 +97,9 @@ typedef struct stc_appconfig
   char ssidStation[32];
   char passwordStation[32];
   uint32_t gpioIRLED;
-  uint32_t u32magic;
+  uint32_t gpioStatusLED;
+  int32_t gpioUserButton;
+  int32_t u32magic;
 } stc_appconfig_t;
 
 /**
@@ -118,9 +123,13 @@ void AppConfig_Write(void);
 char* AppConfig_GetStaSsid(void);
 char* AppConfig_GetStaPassword(void);
 uint32_t AppConfig_GetIrGpio(void);
+int AppConfig_GetStatusLedGpio(void);
+int AppConfig_GetUserButtonGpio(void);
 void AppConfig_SetStaSsid(char* ssid);
 void AppConfig_SetStaPassword(char* pass);
 void AppConfig_SetIrGpio(uint32_t u32Gpio);
+void AppConfig_SetStatusLedGpio(int u32Gpio);
+void AppConfig_SetUserButtonGpio(int u32Gpio);
 
 //@} // AppConfigGroup
 

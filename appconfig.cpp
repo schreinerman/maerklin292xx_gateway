@@ -43,10 +43,12 @@
 
 #if defined(ARDUINO_ARCH_ESP8266)
 #include <EEPROM.h>
-#else
+#elif defined(ARDUINO_ARCH_ESP32)
 #include "FS.h"
 #include "SPIFFS.h"
 #define USE_SPIFFS
+#else
+#error Not supported architecture
 #endif
 
 
@@ -72,13 +74,17 @@ stc_appconfig_t stcAppConfig = {
   INITIAL_SSID_STATION_MODE,
   INITIAL_PASSORD_STATION_MODE,
   INITIAL_GPIO_IR,
+  -1,
+  -1,
   0xFFFFAABB
 };
 
 stc_webconfig_description_t astcAppConfigDescription[] = {
     {enWebConfigTypeStringLen32,"ssid","Wifi SSID"},
     {enWebConfigTypeStringLen32,"password","Wifi Password"},
-    {enWebConfigTypeUInt32,"gpioir","GPIO IR LED"}
+    {enWebConfigTypeUInt32,"gpioir","GPIO IR LED"},
+    {enWebConfigTypeInt32,"gpiostatus","GPIO Status LED"},
+    {enWebConfigTypeInt32,"gpiobutton","GPIO User Button"},
 };
 
 stc_webconfig_handle_t stcWebConfig = {
@@ -197,6 +203,8 @@ void AppConfig_Init(WebServer* pWebServerHandle)
       AppConfig_SetStaSsid(INITIAL_SSID_STATION_MODE);
       AppConfig_SetStaPassword(INITIAL_PASSORD_STATION_MODE);
       AppConfig_SetIrGpio(INITIAL_GPIO_IR);
+      AppConfig_SetStatusLedGpio(-1);
+      AppConfig_SetUserButtonGpio(-1);
       bLockWrite = false;
       AppConfig_Write();
     }
@@ -273,6 +281,36 @@ uint32_t AppConfig_GetIrGpio(void)
 }
 
 /*********************************************
+ * Get Status LED GPIO
+ * 
+ * \return Status LED GPIO Number
+ ********************************************* 
+ */
+int AppConfig_GetStatusLedGpio(void)
+{
+  if (bInitDone == false)
+  {
+    AppConfig_Init(NULL);
+  }
+  return stcAppConfig.gpioStatusLED;
+}
+
+/*********************************************
+ * Get User Button GPIO
+ * 
+ * \return User Button GPIO Number
+ ********************************************* 
+ */
+int AppConfig_GetUserButtonGpio(void)
+{
+  if (bInitDone == false)
+  {
+    AppConfig_Init(NULL);
+  }
+  return stcAppConfig.gpioUserButton;
+}
+
+/*********************************************
  * Set STA-Mode SSID
  * 
  * \param ssid SSID
@@ -320,6 +358,26 @@ void AppConfig_SetIrGpio(uint32_t u32Gpio)
     AppConfig_Init(NULL);
   }
   stcAppConfig.gpioIRLED = u32Gpio;
+  AppConfig_Write();
+}
+
+void AppConfig_SetStatusLedGpio(int u32Gpio)
+{
+  if (bInitDone == false)
+  {
+    AppConfig_Init(NULL);
+  }
+  stcAppConfig.gpioStatusLED = u32Gpio;
+  AppConfig_Write();
+}
+
+void AppConfig_SetUserButtonGpio(int u32Gpio)
+{
+  if (bInitDone == false)
+  {
+    AppConfig_Init(NULL);
+  }
+  stcAppConfig.gpioUserButton = u32Gpio;
   AppConfig_Write();
 }
 
