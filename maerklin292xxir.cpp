@@ -113,6 +113,7 @@
 #include <IRremoteESP8266.h>
 #include <IRsend.h>
 #include "AppConfig.h"
+#include "userledbutton.h"
 
 /**
  *******************************************************************************
@@ -168,7 +169,7 @@ static en_maerklin_292xx_ir_address_t enLastAddress = enMaerklin292xxIrAddressA;
 static volatile uint8_t u8Repeat = 0;
 static volatile uint32_t u32LastUpdate = 0;
 static volatile uint32_t u32UpdateRate = 1000;
-static bool debugMode = true;
+static bool debugMode = false;
 
 /**
  *******************************************************************************
@@ -443,7 +444,9 @@ void Maerklin292xxIr_Send(en_maerklin_292xx_ir_address_t enAddress, uint8_t enFu
         u8Command2 = u8Command2 << 1;
       }
     }
+    UserLedButton_SetLed(true);
     irsend.sendRaw(codeCache,35,38);
+    UserLedButton_SetLed(false);
     delay(10);
     if (enAddress <= enMaerklin292xxIrAddressD)
     {
@@ -452,10 +455,14 @@ void Maerklin292xxIr_Send(en_maerklin_292xx_ir_address_t enAddress, uint8_t enFu
     bToggle = !bToggle;
   } else if (u8CommandLen == 15)
   {
+    UserLedButton_SetLed(true);
     irsend.sendRaw(codeCache,29,38);
+    UserLedButton_SetLed(false);
   } else if (u8CommandLen == 16)
   {
+    UserLedButton_SetLed(true);
     irsend.sendRaw(codeCache,33,38);
+    UserLedButton_SetLed(false);
   }
 
   //
@@ -498,6 +505,7 @@ void Maerklin292xxIr_SetSpeed(en_maerklin_292xx_ir_address_t enAddress, int spee
   //     
   if (enAddress <= enMaerklin292xxIrAddressD)
   {
+    delay(200);
     Maerklin292xxIr_Send(enAddress,enMaerklin292xxIrFuncStop);
     if (speed > 0)
     {
@@ -551,6 +559,7 @@ void Maerklin292xxIr_SetSpeed(en_maerklin_292xx_ir_address_t enAddress, int spee
 void Maerklin292xxIr_ToggleSoundLight(en_maerklin_292xx_ir_address_t enAddress, en_maerklin_292xx_ir_func_t enFunction)
 {
     static uint8_t u8Tmp;
+    delay(300);
     if (enAddress <= enMaerklin292xxIrAddressD)
     {
        Maerklin292xxIr_Send(enAddress,(uint8_t)enFunction);
