@@ -37,11 +37,11 @@
  */
 
 #include "esp32wifi.h"
-
+#include <DNSServer.h>
 
 #if defined(ARDUINO_ARCH_ESP8266)
   #include <ESP8266WiFi.h>
-#else
+#elif defined(ARDUINO_ARCH_ESP32)
   #include <WiFi.h>
 #endif
 #include <WiFiClient.h>
@@ -77,6 +77,8 @@
  *******************************************************************************
  */
 
+const byte DNS_PORT = 53;
+DNSServer dnsServer;
 static uint32_t millisOld = 0;
 static volatile uint32_t u32Counter = 1;
 static char* _ssidStationMode;
@@ -212,10 +214,16 @@ static void ConnectSoftAP(void)
     if (!bConnected)
     {
       bConnected = true;
-      WiFi.softAP(_ssidApMode, _passwordApMode);
-      IPAddress myIP = WiFi.softAPIP();
-      Serial.print("AP IP address: ");
-      Serial.println(myIP);
+      if (WiFi.softAP(_ssidApMode, _passwordApMode))
+      {
+          IPAddress myIP = WiFi.softAPIP();
+          Serial.print("AP IP address: ");
+          Serial.println(myIP);
+          dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
+          dnsServer.start(DNS_PORT, "*", myIP);
+      }
+      
+      
     }
 }
 
