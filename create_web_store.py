@@ -1,4 +1,5 @@
 import os
+import htmlmin
 
 strInitScript = "#if defined(ARDUINO_ARCH_ESP8266)\r\n"
 strInitScript += "  ESP8266WebServer* _pServer;\r\n"
@@ -69,8 +70,14 @@ for subdir, dirs, files in os.walk("html"):
 
                 count = 0
                 # Strips the newline character 
-                for line in Lines: 
-                    lineTmp = line.replace("\"","\\\"")
+                for line in Lines:
+                    lineTmp = line
+                    if (fileType.endswith("html")):
+                        try:
+                            lineTmp = htmlmin.minify(lineTmp,remove_comments=True, remove_empty_space=True,remove_all_empty_space=True)
+                        except:
+                            print("Could not optimize html")
+                    lineTmp = lineTmp.replace("\"","\\\"")
                     lineTmp = lineTmp.replace("\r\n","")
                     lineTmp = lineTmp.replace("\n","")
                     lineTmp = "\"" + lineTmp + "\\r\\n\"\r\n"

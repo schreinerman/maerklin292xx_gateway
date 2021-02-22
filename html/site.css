@@ -50,7 +50,7 @@ font-size: 1rem;
 input[type=text]:focus {
 border-color:#333;
 }
-input[type=submit] {
+input[type=submit], input[type=file] {
 margin: 0.5rem auto;
 padding: 0.75rem;
 font-size: 1rem;
@@ -60,6 +60,21 @@ cursor:pointer;
 -webkit-border-radius: 5px;
 border-radius: 5px; 
 -webkit-appearance: none;
+}
+a.button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0.5rem auto;
+    padding: 0.75rem;
+    font-size: 1rem;
+    background:#ccc; 
+    border:0 none;
+    cursor:pointer;
+    -webkit-border-radius: 5px;
+    border-radius: 5px; 
+    text-decoration: none;
+    color: #000000;
 }
 button:active {
 transform: translateY(0.125rem);
@@ -159,11 +174,11 @@ text-align: center;
 }
 .topcorner{
 position:absolute;
-top:10px;
+top:8px;
 right:10px;
 }
 .topcornerleft {
 position:absolute;
-top:10px;
+top:8px;
 left:10px;
 }
