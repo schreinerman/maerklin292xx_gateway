@@ -1,6 +1,9 @@
 # Maerklin 292xx Gateway for Arduino IDE and ESP32/ESP8266/ESP8285
 ESP32/ESP8266/ESP8285 WiFi to IR gateway for Märklin IR model trains for kids for example using ESP32 at ATOM Lite with TailBat from M5Stack.
 
+The gateway offers a webserver and REST API via http://maerklin292xx_gateway.local or http://192.168.4.1 port 80 and a WiThrottle server via port 2560.
+Default SSID: Maerklin292xxGateway, Password: Maerklin292xxGateway
+
 ![IR Train Image](html/irtrain.png)
 
 Currently supported addresses A,B,C,D,G,H,I,J
@@ -37,7 +40,7 @@ See following list as reference (without warranty or guaranty)
 
 
 
-After upload to ATOM Lite, the locomotive can be controlled placed up to 10cm beside the IR sensor. An external IR transmitter diode can be used by chaning the GPIO channel in maerklin292xxir.h at ```#define MAERKLIN292XXIR_IR_PIN 12``` from 12 to your choice. For example chaning to 25 makes it possible to use some external IR transmitters for having a wide range conection at the bottom connector. Best is to use GND, 5V for the power supply of the IR transmitter. For example using: RM-024 LDTR. See some example here: https://blog.io-expert.com/improving-ir-transmitter-at-atom-lite
+After upload to ATOM Lite, the locomotive can be controlled placed up to 10cm beside the IR sensor. An external IR transmitter diode can be used by chaning the GPIO at the configuration website http://maerklin292xx_gateway.local/config . For example chaning to 25 makes it possible to use some external IR transmitters for having a wide range conection at the bottom connector. Best is to use GND, 5V for the power supply of the IR transmitter. For example using: RM-024 LDTR. See some example here: https://blog.io-expert.com/improving-ir-transmitter-at-atom-lite
 
 
 The ESP32 will automatically log into the specified SSID/password, otherwise it will initiate as SoftAP.
@@ -83,6 +86,7 @@ HtmlFs module
 contains the web content and is automatically generated via create_web_store.py.
 To update the webpage change files in the html folder and navigate to the root folder of this repository and execute 
 ````
+pip install htmlmin
 python create_web_store.py
 ````
 
