@@ -73,6 +73,10 @@
  *******************************************************************************
  */
 
+
+static const ICACHE_FLASH_ATTR char successResponse[] = "<META http-equiv=\"refresh\" content=\"15;URL=/\">Update Success! Rebooting...";
+
+
 /**
  *******************************************************************************
  ** Local function prototypes ('static') 
@@ -250,7 +254,9 @@ static void handleConfig() {
     postForms += "value=\"" + typeToString(pstcWebConfig->astcData[i].type,pstcWebConfig->pu8Data,&dataPos) + "\" ";
     postForms += "name=\"" + String(pstcWebConfig->astcData[i].name) + "\"></td></tr>";
   }
-  postForms += "<tr><td>&nbsp;</td><td align=right><input type=\"submit\" value=\"Save\"></td></tr>"
+  
+  postForms += "<tr><td>Version</td><td>"APP_VERSION"</td><tr>"
+  "<tr><td>&nbsp;</td><td align=right><a href=\"/firmware\" class=\"button\">FW Update</a>&nbsp;&nbsp;<input type=\"submit\" value=\"Save\"></td></tr>"
   "</table>"
   "</form>"
   "</div>"
@@ -280,13 +286,10 @@ void handleForm() {
     }
 
     AppConfig_Write();
-    _pServer->sendHeader("Location", "/config/",true);
-    _pServer->send(302, "text/plane",""); 
-    for(i = 0;i < 10;i++)
-    {
-      _pServer->handleClient();
-      delay(500);
-    }
+    _pServer->client().setNoDelay(true);
+    _pServer->send_P(200, PSTR("text/html"), successResponse);
+    delay(100);
+    _pServer->client().stop();
     ESP.restart();
   }
 }
