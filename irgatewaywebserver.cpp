@@ -38,16 +38,14 @@
 
 #if defined(ARDUINO_ARCH_ESP8266)
   #include <ESP8266WiFi.h>
-  #define WebServer ESP8266WebServer
 #else
   #include <WiFi.h>
 #endif
 #include <WiFiClient.h>
 #if defined(ARDUINO_ARCH_ESP8266)
   #include <ESP8266WebServer.h>
-  #include <ESP8266HTTPUpdateServer.h>
   #include <uri/UriBraces.h>
-#else
+#elif defined(ARDUINO_ARCH_ESP32)
   #include <WebServer.h>
 #endif
 #include "irgatewaywebserver.h"
@@ -82,13 +80,14 @@
  *******************************************************************************
  */
  
-const char* update_path = "/firmware";
-const char* update_username = "admin";
-const char* update_password = "admin";
+//const char* update_path = "/firmware";
+//const char* update_username = "admin";
+//const char* update_password = "admin";
+
+//static ESPHTTPUpdateServer httpUpdater;
 
 #if defined(ARDUINO_ARCH_ESP8266)
 static ESP8266WebServer* pServer;
-static ESP8266HTTPUpdateServer httpUpdater;
 #else
 static WebServer* pServer;
 #endif
@@ -179,7 +178,11 @@ static void processCommand(String channel, String command, String commandArg)
  * 
  * \param enIrChannelAddress default IR channel
  */
-void IrGatewayWebServer_Init(WebServer* pWebServer, en_maerklin_292xx_ir_address_t enIrChannelAddress)
+#if defined(ARDUINO_ARCH_ESP8266)
+  void IrGatewayWebServer_Init(ESP8266WebServer* pWebServer, en_maerklin_292xx_ir_address_t enIrChannelAddress)
+#else
+  void IrGatewayWebServer_Init(WebServer* pWebServer, en_maerklin_292xx_ir_address_t enIrChannelAddress)
+#endif
 {
   pServer = pWebServer;
   enIrAddress = enIrChannelAddress;
@@ -230,10 +233,10 @@ void IrGatewayWebServer_Init(WebServer* pWebServer, en_maerklin_292xx_ir_address
   });
 
   HtmlFs_Init(pServer);
-  #if defined(ARDUINO_ARCH_ESP8266)
-      httpUpdater.setup(pServer, update_path, update_username, update_password);
-  #endif
-  pServer->begin();
+
+  //httpUpdater.setup(pServer, update_path, update_username, update_password);
+
+  
   //Serial.println("HTTP server started");
 }
 
