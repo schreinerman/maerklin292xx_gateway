@@ -113,7 +113,7 @@ const char *hostName = "maerklin-ir-gateway";
 
 const en_maerklin_292xx_ir_address_t enIrChannelAddress = enMaerklin292xxIrAddressC;
 #if defined(ARDUINO_ARCH_ESP8266)
-static ESP8266WebServer server(80);
+static ESP8266WebServer webServer(80);
 #elif defined(ARDUINO_ARCH_ESP32)
 static WebServer webServer(80);
 #endif
