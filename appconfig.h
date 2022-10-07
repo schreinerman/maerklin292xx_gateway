@@ -75,7 +75,9 @@
  *******************************************************************************
  */
 
+#if !defined(APP_VERSION)
 #define APP_VERSION "V1.2.1"
+#endif
 #define INITIAL_SSID_STATION_MODE "MyWifi"
 #define INITIAL_PASSORD_STATION_MODE "MyPassword"
 #if defined(ARDUINO_ARCH_ESP8266)
