@@ -1,4 +1,3 @@
-
 /**
  *******************************************************************************
  ** Created by Manuel Schreiner
@@ -18,25 +17,10 @@
 
 /**
  *******************************************************************************
- **\file maerklin29210_gateway.ino
+ **\file template.ino
  **
- ** ESP8266 / ESP32 WiFi to IR gateway for Märklin IR 
- **
- ** First Startup with
- ** Default SSID: Maerklin292xxGateway, Password: Maerklin292xxGateway
- ** DNS: http://maerklin-ir-gateway.local or via IP http://192.168.4.1 
- **
- ** To log into your local Wifi, change settings at http://maerklin-ir-gateway.local/config
- ** If the local wifi can't be reached, an access point Maerklin292xxGateway will be created again
- **
- ** Different IR GPIO setups can be configured as well at http://maerklin-ir-gateway.local/config
- **   
  ** History:
- ** - 2021-01-02  1.00  Manuel Schreiner  First Release
- ** - 2021-02-07  1.10  Manuel Schreiner  Configuration page was added
- ** - 2021-02-22  1.21  Manuel Schreiner  Added WiThrottle Server
- **                                       Added Firmware Update via /firmware
- **                                       Added user LED / button feature
+ ** - 2021-07-20  1.00  Manuel Schreiner  First Release
  *******************************************************************************
  */
 
@@ -46,37 +30,46 @@
  *******************************************************************************
  */
 
+//#define USE_TIME_FUNCTIONS
+
+#if defined(USE_TIME_FUNCTIONS)
+#include <ESPDateTime.h>
+#include <DateTime.h>
+#include <TimeElapsed.h>
+#include <DateTimeTZ.h>
+#endif
+
 #include <Arduino.h>
-#include <IRremoteESP8266.h>
 
 #if defined(ARDUINO_ARCH_ESP8266)
   #include <ESP8266WiFi.h>
-#elif defined(ARDUINO_ARCH_ESP32)
-  #include <WiFi.h>
-#else
-#error Not supported architecture
-#endif
-#include <WiFiClient.h>
-
-#if defined(ARDUINO_ARCH_ESP8266)
   #include <ESP8266WebServer.h>
   #include <ESP8266mDNS.h>
 #elif defined(ARDUINO_ARCH_ESP32)
+  #include <WiFi.h>
   #include <WebServer.h>
   #include <ESPmDNS.h>
+#elif defined(ARDUINO_ARCH_RP2040)
+  #include <WiFi.h>
+  #include <WebServer.h>
+  #include <LEAmDNS.h>
 #else
 #error Not supported architecture
 #endif
 
+#include "src/appconfig.h"
+#include "src/userledbutton.h"
+#include "src/wifimcu/wifimcuctrl.h"
+#include "src/wifimcu/appwebserver.h"
+#include "src/wifimcu/wifimcuwebupdater.h"
 
-#include "esp32wifi.h"
-#include "maerklin292xxir.h"
-#include "irgatewaywebserver.h"
-#include "appconfig.h"
-#include "withrottle.h"
-#include "espwebupdater.h"
-#include "userledbutton.h"
-#include "locodatabase.h"
+#include "src/maerklin_ir_gw/maerklin292xxir.h"
+#include "src/maerklin_ir_gw/irgatewaywebserver.h"
+#include "src/maerklin_ir_gw/locodatabase.h"
+#include "src/withrottle/withrottle.h"
+
+
+
 
 /**
  *******************************************************************************
@@ -108,13 +101,19 @@
 const char *ssidAp = "Maerklin292xxGateway";
 const char *passwordAp = "Maerklin292xxGateway";
 const char *hostName = "maerklin-ir-gateway";
-//const char *ssidStation = "MyWifi";           --> Moved to appconfig.h, INITIAL_SSID_STATION_MODE, use http://maerklin292xx-gateway.local/config/ to configure
-//const char *passwordStation = "MyPassword";   --> Moved to appconfig.h, INITIAL_PASSORD_STATION_MODE, use http://maerklin292xx-gateway.local/config/ to configure
+
+static int minsLast = 0;
+static int hoursLast = 0;
+static int daysLast = 0;
+static uint32_t u32LastMillis = 0;
 
 const en_maerklin_292xx_ir_address_t enIrChannelAddress = enMaerklin292xxIrAddressC;
+
 #if defined(ARDUINO_ARCH_ESP8266)
 static ESP8266WebServer webServer(80);
 #elif defined(ARDUINO_ARCH_ESP32)
+static WebServer webServer(80);
+#elif defined(ARDUINO_ARCH_RP2040)
 static WebServer webServer(80);
 #endif
 
@@ -136,56 +135,134 @@ void setup() {
   //intiate serial port
   Serial.begin(115200);
   Serial.println("");
-  Serial.println("Welcome to maerklin292xx gateway");
+  Serial.println("Welcome...");
 
   AppConfig_Init(&webServer);
 
   UserLedButton_Init();
-  
-  Maerklin292xxIr_Init();
-
-  LocoDatabase_Init();
 
   //initiate WIFI
-  Esp32Wifi_DualModeInit((char*)AppConfig_GetStaSsid(),(char*)AppConfig_GetStaPassword(),ssidAp,passwordAp);
-                                                                  
-  Serial.println("");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
 
   #if defined(ARDUINO_ARCH_ESP8266)
      WiFi.hostname(hostName);
   #elif defined(ARDUINO_ARCH_ESP32)
      WiFi.setHostname(hostName);
+  #elif defined(ARDUINO_ARCH_RP2040)
+     WiFi.setHostname(hostName);
   #endif
   
+  Serial.println("Trying to connect with accesspoint (can take a while)...");
+  WifiMcuCtrl_DualModeInit((char*)AppConfig_GetStaSsid(),(char*)AppConfig_GetStaPassword(),ssidAp,passwordAp);
+                                                                  
+  Serial.println("");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
 
   if (MDNS.begin(hostName)) {
     Serial.println("MDNS responder started");
   }
+
+  Maerklin292xxIr_Init();
+
+  LocoDatabase_Init();
   
-  EspWebUpdater_Init(&webServer);
+  WifiMcuWebUpdater_Init(&webServer);
   
-  IrGatewayWebServer_Init(&webServer,enIrChannelAddress);
+  AppWebServer_Init(&webServer);
   
   webServer.begin();
+
+  #if defined(USE_TIME_FUNCTIONS)
+    DateTime.setTimeZone("GMT-2");
+    DateTime.begin();
+
+    if (!DateTime.isTimeValid()) {
+      Serial.println("Failed to get time from server.");
+    } else
+    {
+      Serial.printf("Date Now is %s\n", DateTime.toISOString().c_str());
+      Serial.printf("Timestamp is %ld\n", DateTime.now());
+      DateTimeParts parts = DateTime.getParts();
+      Serial.printf("H: %d M: %d\n",parts.getHours(),parts.getMinutes());
+    }
+  #endif
+
+  IrGatewayWebServer_Init(&webServer,enIrChannelAddress);
+  
   MDNS.addService("http", "tcp", 80);
   MDNS.addService("irgateway","tcp",80);
   MDNS.addService("withrottle", "tcp", 2560);
 
   WiThrottle_Init();
+
+  //add your initial stuff here
+}
+
+void RunEveryMinute(uint8_t u8Hours, uint8_t u8Minutes)
+{
+    
+}
+
+void RunEveryHour(uint8_t u8Hours, uint8_t u8Minutes)
+{
+    
+}
+
+void RunEveryDay(uint8_t u8Hours, uint8_t u8Minutes)
+{
+  
 }
 
 
 
 void loop() {
+  bool bMinuteUpdated = false;
+  bool bHourUpdated = false;
+  bool bDayUpdated = false;
+
+  #if defined(USE_TIME_FUNCTIONS)
+  DateTimeParts parts = DateTime.getParts();
+  #endif
+
   // put your main code here, to run repeatedly:
   #if defined(ARDUINO_ARCH_ESP8266)
   MDNS.update();
   #endif
-  IrGatewayWebServer_Update();
-  Esp32Wifi_Update();
-  IrGatewayWebServer_Update();
+  AppWebServer_Update();
+  WifiMcuCtrl_Update();
+  AppWebServer_Update();
   Maerklin292xxIr_Update();
   WiThrottle_Update();
+
+  if (u32LastMillis != millis())
+  {
+      u32LastMillis = millis();
+  }
+
+  #if defined(USE_TIME_FUNCTIONS)
+  if (minsLast != parts.getMinutes())
+  {
+      RunEveryMinute(parts.getHours(),parts.getMinutes());
+      minsLast = parts.getMinutes();
+      bMinuteUpdated = true;
+  }
+
+  if (hoursLast != parts.getHours())
+  {
+      if (hoursLast > parts.getHours())
+      {
+          RunEveryDay(parts.getHours(),parts.getMinutes());
+          bDayUpdated = true;
+      }
+      hoursLast = parts.getHours();
+      RunEveryHour(parts.getHours(),parts.getMinutes());
+      bHourUpdated = true;
+      if (bMinuteUpdated == false)
+      {
+          RunEveryMinute(parts.getHours(),parts.getMinutes());
+      }
+  }
+  #endif
+
+  //add your cyclic stuff here
 }

@@ -7,11 +7,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <meta name="apple-itunes-app" content="app-id=1547859811">
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
@@ -19,227 +18,227 @@
 
     <title>IR Train</title>
     <script>
-    function execcmd(cmd) {
-        var addressElements = document.getElementsByName('tab-group-address');
-        var selectedAddress;
-
-        for(var i = 0; i < addressElements.length; i++) {
-            if(addressElements[i].checked)
-                selectedAddress = addressElements[i].value;
-        }
-
-        fetch('/cmd/' + selectedAddress + '/' + cmd);
-    }
-    function requestFullScreen() {
-        const _element = document.documentElement;
-        if (_element.requestFullscreen) {
-           _element.requestFullscreen();
-        } else {
-        if (_element.mozRequestFullScreen) {
-           _element.mozRequestFullScreen();
-        } else {
-           if (_element.webkitRequestFullscreen) {
-              _element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-           }
-        }
-      }
-    }
-    var tapedTwice = false;
-
-    function tapHandler(event) {
-        if(!tapedTwice) {
-            tapedTwice = true;
-            setTimeout( function() { tapedTwice = false; }, 300 );
-            return false;
-        }
-        event.preventDefault();
-    }
-
-    function blockMove() {
-          event.preventDefault() ;
-    }
-
-    function handleKeepAlive()
-    {
-        let overlay = document.getElementById("overlay");
-        fetch('/cmd/keepalive')
-        .then(data => {          
-            console.log('Success:', data);
-            if (data.ok)
-            {
-                overlay.style.display = "none";               
-            } else
-            {
-                overlay.style.display = "block";
-            }
-        })
-        .catch((error) => {
-            let overlay = document.getElementById("overlay");
-            console.log('Error:', error);
-            overlay.style.display = "block";
-        });
-    }
-
-    window.setTimeout(function() {
-        requestFullScreen();
-    },1000);
-
-    window.setInterval(function() {
-        handleKeepAlive();
-    },5000);
-
-    window.setTimeout(function() {
-        handleKeepAlive();
-        requestFullScreen();
-    },100);
-
-    window.addEventListener('resize', function() {
-       let logo = document.getElementById("logo");
-       let main = document.getElementById("main");
-       if ((window.innerHeight / main.clientHeight) < 1.6)
-       {
-        logo.style.display = "none"; 
-       } else
-       {
-        logo.style.display = "block"; 
-       }
-    });
+        function execcmd(cmd) {
+            var addressElements = document.getElementsByName('tab-group-address');
+            var selectedAddress;
     
-    </script>
-    <link rel="stylesheet" href="site.css">
-</head>
-<body ontouchmove="blockMove()" ontouchstart="tapHandler">
-        <div class="bar">
-            <div class="topcornerleft">
-                <img style="margin-top: -2px" src="favicon-32x32.png">
+            for(var i = 0; i < addressElements.length; i++) {
+                if(addressElements[i].checked)
+                    selectedAddress = addressElements[i].value;
+            }
+    
+            fetch('/cmd/' + selectedAddress + '/' + cmd);
+        }
+        function requestFullScreen() {
+            const _element = document.documentElement;
+            if (_element.requestFullscreen) {
+               _element.requestFullscreen();
+            } else {
+            if (_element.mozRequestFullScreen) {
+               _element.mozRequestFullScreen();
+            } else {
+               if (_element.webkitRequestFullscreen) {
+                  _element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+               }
+            }
+          }
+        }
+        var tapedTwice = false;
+    
+        function tapHandler(event) {
+            if(!tapedTwice) {
+                tapedTwice = true;
+                setTimeout( function() { tapedTwice = false; }, 300 );
+                return false;
+            }
+            event.preventDefault();
+        }
+    
+        function blockMove() {
+              event.preventDefault() ;
+        }
+    
+        function handleKeepAlive()
+        {
+            let overlay = document.getElementById("overlay");
+            fetch('/cmd/keepalive')
+            .then(data => {          
+                console.log('Success:', data);
+                if (data.ok)
+                {
+                    overlay.style.display = "none";               
+                } else
+                {
+                    overlay.style.display = "block";
+                }
+            })
+            .catch((error) => {
+                let overlay = document.getElementById("overlay");
+                console.log('Error:', error);
+                overlay.style.display = "block";
+            });
+        }
+    
+        window.setTimeout(function() {
+            requestFullScreen();
+        },1000);
+    
+        window.setInterval(function() {
+            handleKeepAlive();
+        },5000);
+    
+        window.setTimeout(function() {
+            handleKeepAlive();
+            requestFullScreen();
+        },100);
+    
+        window.addEventListener('resize', function() {
+           let logo = document.getElementById("logo");
+           let main = document.getElementById("main");
+           if ((window.innerHeight / main.clientHeight) < 1.6)
+           {
+            logo.style.display = "none"; 
+           } else
+           {
+            logo.style.display = "block"; 
+           }
+        });
+        
+        </script>
+        <link rel="stylesheet" href="site.css">
+    </head>
+    <body ontouchmove="blockMove()" ontouchstart="tapHandler">
+            <div class="bar">
+                <div class="topcornerleft">
+                    <img style="margin-top: -2px" src="icons/favicon-32x32.png">
+                </div>
+                <div class="title"><script>document.write(document.title);</script></div>
+                <div class="topcorner">
+                    <a href="/config/">
+                        <svg class=mdi-icon-32 viewBox="0 0 32 32">
+                            <path fill="#1189DC" d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                        </svg>
+                    </a>
+                </div>
             </div>
-            <div class="title"><script>document.write(document.title);</script></div>
-            <div class="topcorner">
-                <a href="/config/">
-                    <svg class=mdi-icon-32 viewBox="0 0 32 32">
-                        <path fill="#1189DC" d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
-                    </svg>
-                </a>
-            </div>
+            <div id="logo" style="margin-top:10px; height:25%; background-image: url(irtrain.png); background-repeat: no-repeat;
+            background-size: contain;" ></div>
+            <div id="main" class=main>
+            <center>
+                <p>
+                <div style="height:10%; margin:0 auto; width:315px">
+                    <div class="tab">
+                        <input type="radio" id="A" value="A" name="tab-group-address">
+                        <label style="border-radius: 0.5em 0.1em 0.1em 0.5em" for="A">A</label>
+                    </div>
+                    <div class="tab">
+                        <input type="radio" id="B" value="B" name="tab-group-address">
+                        <label for="B">B</label>
+                    </div>
+                    <div class="tab">
+                        <input type="radio" id="C" value="C" name="tab-group-address" checked>
+                        <label for="C">C</label>
+                    </div>
+                    <div class="tab">
+                        <input type="radio" id="D" value="D" name="tab-group-address">
+                        <label for="D">D</label>
+                    </div>
+                    <div class="tab">
+                        <input type="radio" id="G" value="G" name="tab-group-address">
+                        <label for="G">G</label>
+                    </div>
+                    <div class="tab">
+                        <input type="radio" id="H" value="H" name="tab-group-address">
+                        <label for="H">H</label>
+                    </div>
+                    <div class="tab">
+                        <input type="radio" id="I" value="I" name="tab-group-address">
+                        <label for="I">I</label>
+                    </div>
+                    <div class="tab">
+                        <input type="radio" id="J" value="J" name="tab-group-address">
+                        <label for="J" style="border-radius: 0.1em 0.5em 0.5em 0.1em">J</label>
+                    </div>
+                </div>
+                </p>
+                <br>
+                <p>
+                    <button onclick="execcmd('light')" style="width:24%">
+                        <!-- car-light-high -->
+                        <svg class=mdi-icon viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M13,4.8C9,4.8 9,19.2 13,19.2C17,19.2 22,16.5 22,12C22,7.5 17,4.8 13,4.8M13.1,17.2C12.7,16.8 12,15 12,12C12,9 12.7,7.2 13.1,6.8C16,6.9 20,8.7 20,12C20,15.3 16,17.1 13.1,17.2M2,5H9.5C9.3,5.4 9,5.8 8.9,6.4C8.8,6.6 8.8,6.8 8.7,7H2V5M8,11H2V9H8.2C8.1,9.6 8.1,10.3 8,11M8.7,17C8.9,17.8 9.2,18.4 9.6,19H2.1V17H8.7M8.2,15H2V13H8C8.1,13.7 8.1,14.4 8.2,15Z" />
+                        </svg>
+                    </button>
+                    <button onclick="execcmd('sound/1')" style="width:24%">
+                        <!-- waveform -->
+                        <svg class=mdi-icon viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M22 12L20 13L19 14L18 13L17 16L16 13L15 21L14 13L13 15L12 13L11 17L10 13L9 22L8 13L7 19L6 13L5 14L4 13L2 12L4 11L5 10L6 11L7 5L8 11L9 2L10 11L11 7L12 11L13 9L14 11L15 3L16 11L17 8L18 11L19 10L20 11L22 12Z" />
+                        </svg>
+                    </button>
+                    <button onclick="execcmd('sound/2')" style="width:24%">
+                        <!-- bugle -->
+                        <svg class=mdi-icon viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M21,6C21,11 12,11 12,11C12,11 6,11 5,11C4,11 3,10 3,10H2V14H3C3,14 4,13 5,13C5.2,13 5.7,13 6.3,13C5.5,13.5 5,14.2 5,15C5,16.8 7.3,18 10.5,18C13.7,18 16,16.8 16,15C16,14.4 15.7,13.8 15.2,13.3C17.8,13.8 21,15 21,18H22V6H21M10.5,16.7C8.2,16.7 6.4,15.9 6.4,15C6.4,14.1 8.2,13.3 10.5,13.3C12.8,13.3 14.6,14.1 14.6,15C14.6,15.9 12.8,16.7 10.5,16.7Z" />
+                        </svg>
+                    </button>
+                    <button onclick="execcmd('sound/3')" style="width:24%">
+                        <!-- electric-switch -->
+                        <svg class=mdi-icon viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M1,11H3.17C3.58,9.83 4.69,9 6,9C6.65,9 7.25,9.21 7.74,9.56L14.44,4.87L15.58,6.5L8.89,11.2C8.96,11.45 9,11.72 9,12A3,3 0 0,1 6,15C4.69,15 3.58,14.17 3.17,13H1V11M23,11V13H20.83C20.42,14.17 19.31,15 18,15A3,3 0 0,1 15,12A3,3 0 0,1 18,9C19.31,9 20.42,9.83 20.83,11H23M6,11A1,1 0 0,0 5,12A1,1 0 0,0 6,13A1,1 0 0,0 7,12A1,1 0 0,0 6,11M18,11A1,1 0 0,0 17,12A1,1 0 0,0 18,13A1,1 0 0,0 19,12A1,1 0 0,0 18,11Z" />
+                        </svg>
+                    </button>
+                </p>
+                <p>
+                    <button onclick="execcmd('speed/-3')">
+                        <!-- step-backward-2 -->
+                        <svg class=mdi-icon viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M17,5H14V19H17V5M12,5L1,12L12,19V5M22,5H19V19H22V5Z" />
+                        </svg>
+                    </button>
+                    <button onclick="execcmd('speed/-2')">
+                        <!-- step-backward -->
+                        <svg class=mdi-icon viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M19,5V19H16V5M14,5V19L3,12" />
+                        </svg>
+                    </button>
+                    <button onclick="execcmd('speed/-1')">
+                        <!-- play -->
+                        <svg class=mdi-icon style="transform: rotate(180deg);" viewBox="0 0 -12 -12">
+                            <path fill="currentColor" d="M8,5.14V19.14L19,12.14L8,5.14Z" />
+                        </svg>
+                    </button>
+                    <button onclick="execcmd('speed/1')">
+                        <!-- play -->
+                        <svg class=mdi-icon viewBox="0 0 -12 -12">
+                            <path fill="currentColor" d="M8,5.14V19.14L19,12.14L8,5.14Z" />
+                        </svg>
+                    </button>
+                    <button onclick="execcmd('speed/2')">
+                        <!-- step-forward -->
+                        <svg class=mdi-icon viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M5,5V19H8V5M10,5V19L21,12" />
+                        </svg>
+                    </button>
+                    <button onclick="execcmd('speed/3')">
+                        <!-- step-forward-2 -->
+                        <svg class=mdi-icon viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M7,5H10V19H7V5M12,5L23,12L12,19V5M2,5H5V19H2V5Z" />
+                        </svg>
+                    </button>
+                </p>
+                <p> 
+                    <button onclick="execcmd('speed/0')" style="width:50%">
+                        <!-- stop -->
+                        <svg class=mdi-icon viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M18,18H6V6H18V18Z" />
+                        </svg>
+                    </button>
+                </p>
+            </center>
         </div>
-        <div id="logo" style="margin-top:10px; height:25%; background-image: url(irtrain.png); background-repeat: no-repeat;
-        background-size: contain;" ></div>
-        <div id="main" class=main>
-        <center>
-            <p>
-            <div style="height:10%; margin:0 auto; width:315px">
-                <div class="tab">
-                    <input type="radio" id="A" value="A" name="tab-group-address">
-                    <label style="border-radius: 0.5em 0.1em 0.1em 0.5em" for="A">A</label>
-                </div>
-                <div class="tab">
-                    <input type="radio" id="B" value="B" name="tab-group-address">
-                    <label for="B">B</label>
-                </div>
-                <div class="tab">
-                    <input type="radio" id="C" value="C" name="tab-group-address" checked>
-                    <label for="C">C</label>
-                </div>
-                <div class="tab">
-                    <input type="radio" id="D" value="D" name="tab-group-address">
-                    <label for="D">D</label>
-                </div>
-                <div class="tab">
-                    <input type="radio" id="G" value="G" name="tab-group-address">
-                    <label for="G">G</label>
-                </div>
-                <div class="tab">
-                    <input type="radio" id="H" value="H" name="tab-group-address">
-                    <label for="H">H</label>
-                </div>
-                <div class="tab">
-                    <input type="radio" id="I" value="I" name="tab-group-address">
-                    <label for="I">I</label>
-                </div>
-                <div class="tab">
-                    <input type="radio" id="J" value="J" name="tab-group-address">
-                    <label for="J" style="border-radius: 0.1em 0.5em 0.5em 0.1em">J</label>
-                </div>
-            </div>
-            </p>
-            <br>
-            <p>
-                <button onclick="execcmd('light')" style="width:24%">
-                    <!-- car-light-high -->
-                    <svg class=mdi-icon viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M13,4.8C9,4.8 9,19.2 13,19.2C17,19.2 22,16.5 22,12C22,7.5 17,4.8 13,4.8M13.1,17.2C12.7,16.8 12,15 12,12C12,9 12.7,7.2 13.1,6.8C16,6.9 20,8.7 20,12C20,15.3 16,17.1 13.1,17.2M2,5H9.5C9.3,5.4 9,5.8 8.9,6.4C8.8,6.6 8.8,6.8 8.7,7H2V5M8,11H2V9H8.2C8.1,9.6 8.1,10.3 8,11M8.7,17C8.9,17.8 9.2,18.4 9.6,19H2.1V17H8.7M8.2,15H2V13H8C8.1,13.7 8.1,14.4 8.2,15Z" />
-                    </svg>
-                </button>
-                <button onclick="execcmd('sound/1')" style="width:24%">
-                    <!-- waveform -->
-                    <svg class=mdi-icon viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M22 12L20 13L19 14L18 13L17 16L16 13L15 21L14 13L13 15L12 13L11 17L10 13L9 22L8 13L7 19L6 13L5 14L4 13L2 12L4 11L5 10L6 11L7 5L8 11L9 2L10 11L11 7L12 11L13 9L14 11L15 3L16 11L17 8L18 11L19 10L20 11L22 12Z" />
-                    </svg>
-                </button>
-                <button onclick="execcmd('sound/2')" style="width:24%">
-                    <!-- bugle -->
-                    <svg class=mdi-icon viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M21,6C21,11 12,11 12,11C12,11 6,11 5,11C4,11 3,10 3,10H2V14H3C3,14 4,13 5,13C5.2,13 5.7,13 6.3,13C5.5,13.5 5,14.2 5,15C5,16.8 7.3,18 10.5,18C13.7,18 16,16.8 16,15C16,14.4 15.7,13.8 15.2,13.3C17.8,13.8 21,15 21,18H22V6H21M10.5,16.7C8.2,16.7 6.4,15.9 6.4,15C6.4,14.1 8.2,13.3 10.5,13.3C12.8,13.3 14.6,14.1 14.6,15C14.6,15.9 12.8,16.7 10.5,16.7Z" />
-                    </svg>
-                </button>
-                <button onclick="execcmd('sound/3')" style="width:24%">
-                    <!-- electric-switch -->
-                    <svg class=mdi-icon viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M1,11H3.17C3.58,9.83 4.69,9 6,9C6.65,9 7.25,9.21 7.74,9.56L14.44,4.87L15.58,6.5L8.89,11.2C8.96,11.45 9,11.72 9,12A3,3 0 0,1 6,15C4.69,15 3.58,14.17 3.17,13H1V11M23,11V13H20.83C20.42,14.17 19.31,15 18,15A3,3 0 0,1 15,12A3,3 0 0,1 18,9C19.31,9 20.42,9.83 20.83,11H23M6,11A1,1 0 0,0 5,12A1,1 0 0,0 6,13A1,1 0 0,0 7,12A1,1 0 0,0 6,11M18,11A1,1 0 0,0 17,12A1,1 0 0,0 18,13A1,1 0 0,0 19,12A1,1 0 0,0 18,11Z" />
-                    </svg>
-                </button>
-            </p>
-            <p>
-                <button onclick="execcmd('speed/-3')">
-                    <!-- step-backward-2 -->
-                    <svg class=mdi-icon viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M17,5H14V19H17V5M12,5L1,12L12,19V5M22,5H19V19H22V5Z" />
-                    </svg>
-                </button>
-                <button onclick="execcmd('speed/-2')">
-                    <!-- step-backward -->
-                    <svg class=mdi-icon viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M19,5V19H16V5M14,5V19L3,12" />
-                    </svg>
-                </button>
-                <button onclick="execcmd('speed/-1')">
-                    <!-- play -->
-                    <svg class=mdi-icon style="transform: rotate(180deg);" viewBox="0 0 -12 -12">
-                        <path fill="currentColor" d="M8,5.14V19.14L19,12.14L8,5.14Z" />
-                    </svg>
-                </button>
-                <button onclick="execcmd('speed/1')">
-                    <!-- play -->
-                    <svg class=mdi-icon viewBox="0 0 -12 -12">
-                        <path fill="currentColor" d="M8,5.14V19.14L19,12.14L8,5.14Z" />
-                    </svg>
-                </button>
-                <button onclick="execcmd('speed/2')">
-                    <!-- step-forward -->
-                    <svg class=mdi-icon viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M5,5V19H8V5M10,5V19L21,12" />
-                    </svg>
-                </button>
-                <button onclick="execcmd('speed/3')">
-                    <!-- step-forward-2 -->
-                    <svg class=mdi-icon viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M7,5H10V19H7V5M12,5L23,12L12,19V5M2,5H5V19H2V5Z" />
-                    </svg>
-                </button>
-            </p>
-            <p> 
-                <button onclick="execcmd('speed/0')" style="width:50%">
-                    <!-- stop -->
-                    <svg class=mdi-icon viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M18,18H6V6H18V18Z" />
-                    </svg>
-                </button>
-            </p>
-        </center>
-    </div>
-    <div id="overlay">
-        <div class="loader"></div>
-    </div>
-</body>
+        <div id="overlay">
+            <div class="loader"></div>
+        </div>
+    </body>
 </html>
 

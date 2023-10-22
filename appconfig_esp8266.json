@@ -1,0 +1,27 @@
+{
+    "project":
+    {
+        "name":"maerklin293xx-gw-app",
+        "version":"2.0.0"
+    },
+    "variables":[
+        {
+            "name":"GpioIr",
+            "description":"GPIO IR LED",
+            "type":"Int32",
+            "initial":"14"
+        },
+        {
+            "name":"GpioStatus",
+            "description":"GPIO Status LED",
+            "type":"Int32",
+            "initial":"4"
+        },
+        {
+            "name":"GpioButton",
+            "description":"GPIO Button",
+            "type":"Int32",
+            "initial":"-32"
+        }
+    ]
+}

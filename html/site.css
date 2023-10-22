@@ -126,7 +126,7 @@ left:0px;
 }
 .main {
 position: absolute; 
-bottom: 10px; 
+top:45%;
 padding-top: 10px;
 left:10px;
 right:10px;
