@@ -30,8 +30,8 @@ jobs:
       shell: bash
     - name: make
       run: make all
-    - name: Download a Build Artifact
-      uses: actions/download-artifact@v2.1.1
+    - uses: actions/upload-artifact@v3
       with:
-        path: ./release/*
+        name: my-artifact
+        path: release/*
       
