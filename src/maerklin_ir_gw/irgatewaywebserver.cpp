@@ -52,6 +52,8 @@
 
 #include <WiFiClient.h>
 
+#include <ArduinoJson.h>
+
 #include "irgatewaywebserver.h"
 #include "../wifimcu/htmlfs.h"
 #include "../wifimcu/wifimcuctrl.h"
@@ -89,6 +91,8 @@
 //const char* update_password = "admin";
 
 //static ESPHTTPUpdateServer httpUpdater;
+
+StaticJsonDocument<256> doc;
 
 #if defined(ARDUINO_ARCH_ESP8266)
 static ESP8266WebServer* pServer;
@@ -177,6 +181,42 @@ static void processCommand(String channel, String command, String commandArg)
     pServer->send(200, "text/plain", "done");
 }
 
+static void handleCmdAPI(void) {
+  if (pServer->method() == HTTP_GET) {
+      pServer->send(404, "text/plain", "Page not found.");
+  } else if (pServer->method() == HTTP_POST)
+  {
+      if (pServer->args() == 1)
+      {
+          if (pServer->arg(0) != NULL)
+          {
+              deserializeJson(doc, pServer->arg(0));
+              const char* channel = NULL;
+              const char* cmd = NULL;
+              const char* cmdArgs = NULL;
+              bool bRepeated = false;
+              if (doc.containsKey("channel"))
+              {
+                  channel = doc["channel"];
+              }
+              if (doc.containsKey("cmd"))
+              {
+                  cmd = doc["cmd"];
+              }
+              if (doc.containsKey("args"))
+              {
+                  cmdArgs = doc["args"];
+              }
+              if (doc.containsKey("repeated"))
+              {
+                  bRepeated = doc["repeated"];
+              }
+              processCommand(channel,cmd,cmdArgs);
+          }
+      }
+  }
+}
+
 /*
  * Init Webserver Service
  * 
@@ -190,6 +230,8 @@ static void processCommand(String channel, String command, String commandArg)
 {
   pServer = pWebServer;
   enIrAddress = enIrChannelAddress;
+
+  pServer->on("/api/cmd", handleCmdAPI);
   
 
   #if defined(ARDUINO_ARCH_ESP8266)
