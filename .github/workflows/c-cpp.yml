@@ -19,7 +19,7 @@ jobs:
         ./build.sh prepare
       shell: bash
     - name: make
-      run: make all
+      run: ./build.sh build
     - uses: actions/upload-artifact@v3
       with:
         name: maerklin293xx-gw-app
