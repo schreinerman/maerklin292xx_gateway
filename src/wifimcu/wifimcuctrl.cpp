@@ -61,8 +61,8 @@
 #define uS_TO_S_FACTOR 1000000ULL  /* Conversion factor for micro seconds to seconds */
 #define TIME_TO_SLEEP  10          /* Time ESP32 will go to sleep (in seconds)       */
 #define TIME_TO_WAKE   15          /* Time between sleep waiting for connection      */
-#define TIMEOUT_SLEEP  60          /* Seconds after last keepout before sleep, set to 0 to disable */
-#define STATION_MODE_REBOOT 0    /* keep station mode, set to 0 */
+#define TIMEOUT_SLEEP  0           /* Seconds after last keepout before sleep, set to 0 to disable */
+#define STATION_MODE_REBOOT 0      /* keep station mode, set to 0 */
 
 /**
  *******************************************************************************
@@ -147,7 +147,7 @@ static void WiFiConnect(void)
       WiFi.begin(_ssidStationMode, _passwordStationMode);
       while (!GetConnected() && (i < 100)) 
       {
-        delay(5);
+        delay(10);
         i++;
       }
     #endif
@@ -239,7 +239,7 @@ void WifiMcuCtrl_DualModeInit(const char* ssidStation, const char* passwordStati
           i = 0;
           while (!GetConnected() && (i < 100)) 
           {
-            delay(5);
+            delay(10);
             i++;
           }
         }
