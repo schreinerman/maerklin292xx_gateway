@@ -19,9 +19,9 @@ jobs:
         ./build.sh prepare
       shell: bash
     - name: make
-      run: ./build.sh build
-    - name: Download a Build Artifact
-      uses: actions/download-artifact@v2.1.1
+      run: make all
+    - uses: actions/upload-artifact@v3
       with:
-        path: ./release/*
+        name: maerklin293xx-gw-app
+        path: release/*
       
