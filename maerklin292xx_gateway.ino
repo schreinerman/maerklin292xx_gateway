@@ -63,6 +63,8 @@
 #include "src/wifimcu/appwebserver.h"
 #include "src/wifimcu/wifimcuwebupdater.h"
 
+#include "src/mdns/mdnsclientlist.h"
+
 #include "src/maerklin_ir_gw/maerklin292xxir.h"
 #include "src/maerklin_ir_gw/irgatewaywebserver.h"
 #include "src/maerklin_ir_gw/locodatabase.h"
@@ -106,6 +108,8 @@ static int minsLast = 0;
 static int hoursLast = 0;
 static int daysLast = 0;
 static uint32_t u32LastMillis = 0;
+static char chipID[128];
+static char uniqueHostname[256];
 
 const en_maerklin_292xx_ir_address_t enIrChannelAddress = enMaerklin292xxIrAddressC;
 
@@ -129,6 +133,28 @@ static WebServer webServer(80);
  *******************************************************************************
  */
 
+static char* getChipID(void)
+{
+    uint8_t UniqueID[8];
+    uint32_t iChipID;
+    #if defined(ARDUINO_ARCH_ESP8266)
+        iChipID = ESP.getChipId();
+        //iChipID = iChipID + random(5000);
+        sprintf(chipID,"%08X",iChipID);
+    #elif defined(ARDUINO_ARCH_ESP32)
+        for(int i=0; i<17; i=i+8) {
+            chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
+        }
+        sprintf(chipID,"%08X",iChipID);
+    #elif defined(ARDUINO_ARCH_RP2040)
+        flash_get_unique_id(UniqueID);
+        sprintf(chipID,"%02X%02X%02X%02X%02X%02X%02X%02X",UniqueID[0],UniqueID[1],UniqueID[2],UniqueID[3],UniqueID[4],UniqueID[5],UniqueID[6],UniqueID[7]);                                                 
+    #else
+    #error Not supported architecture
+    #endif
+    return chipID;
+}
+
 void setup() {
   // put your setup code here, to run once:
 
@@ -136,6 +162,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("");
   Serial.println("Welcome...");
+  sprintf(uniqueHostname,"%s_%s",hostName,getChipID());
 
   AppConfig_Init(&webServer);
 
@@ -160,6 +187,10 @@ void setup() {
 
   if (MDNS.begin(hostName)) {
     Serial.println("MDNS responder started");
+  }
+
+  if (MDNS.begin(uniqueHostname)) {
+    Serial.println("MDNS responder started with unique ID");
   }
 
   Maerklin292xxIr_Init();
@@ -195,6 +226,8 @@ void setup() {
 
   WiThrottle_Init();
 
+  MdnsClientList_Init("irgateway");
+
   //add your initial stuff here
 }
 
@@ -229,10 +262,29 @@ void loop() {
   MDNS.update();
   #endif
   AppWebServer_Update();
+  #if defined(ARDUINO_ARCH_ESP8266)
+  MDNS.update();
+  #endif
   WifiMcuCtrl_Update();
+  #if defined(ARDUINO_ARCH_ESP8266)
+  MDNS.update();
+  #endif
   AppWebServer_Update();
+  #if defined(ARDUINO_ARCH_ESP8266)
+  MDNS.update();
+  #endif
   Maerklin292xxIr_Update();
+  #if defined(ARDUINO_ARCH_ESP8266)
+  MDNS.update();
+  #endif
   WiThrottle_Update();
+  #if defined(ARDUINO_ARCH_ESP8266)
+  MDNS.update();
+  #endif
+  MdnsClientList_Update();
+  #if defined(ARDUINO_ARCH_ESP8266)
+  MDNS.update();
+  #endif
 
   if (u32LastMillis != millis())
   {
