@@ -17,7 +17,7 @@ jobs:
       run: |
         sudo apt-get update && sudo apt-get install -yq curl wget bzip2 tar ca-certificates make python3 python3-pip 
         sudo curl "https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh" -o arduino-cli-install.sh
-        BINDIR=/usr/bin sudo sh arduino-cli-install.sh
+        sudo bash -c "BINDIR=/usr/bin sh arduino-cli-install.sh"
         mkdir ~/.arduino15
         touch ~/.arduino15/package_esp8266com_index.json
         arduino-cli config init
