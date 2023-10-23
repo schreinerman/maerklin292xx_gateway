@@ -36,15 +36,20 @@
  *******************************************************************************
  */
 
+#include <Arduino.h>
+
 #if defined(ARDUINO_ARCH_ESP8266)
   #include <ESP8266WiFi.h>
   #include <ESP8266WebServer.h>
+  #include <ESP8266HTTPClient.h>
   #include <uri/UriBraces.h>
 #elif defined(ARDUINO_ARCH_ESP32)
   #include <WebServer.h>
+  #include <HTTPClient.h>
   #include <WiFi.h>
 #elif defined(ARDUINO_ARCH_RP2040)
   #include <WebServer.h>
+  #include <HTTPClient.h>
   #include <WiFi.h>
 #else
 #error Not supported architecture
@@ -57,6 +62,7 @@
 #include "irgatewaywebserver.h"
 #include "../wifimcu/htmlfs.h"
 #include "../wifimcu/wifimcuctrl.h"
+#include "../mdns/mdnsclientlist.h"
 #include "maerklin292xxir.h"
 
 
@@ -99,6 +105,9 @@ static ESP8266WebServer* pServer;
 #else
 static WebServer* pServer;
 #endif
+
+WiFiClient client;
+HTTPClient httpClient;
 
 static en_maerklin_292xx_ir_address_t enIrAddress = enMaerklin292xxIrAddressA;
 /**
@@ -182,36 +191,54 @@ static void processCommand(String channel, String command, String commandArg)
 }
 
 static void handleCmdAPI(void) {
+  static char urlClient[128];
+  static char jsonData[128];
   if (pServer->method() == HTTP_GET) {
       pServer->send(404, "text/plain", "Page not found.");
   } else if (pServer->method() == HTTP_POST)
   {
-      if (pServer->args() == 1)
+      String json = "{}";
+      if ((pServer->hasArg("plain")) && (pServer->args() == 0))
       {
-          if (pServer->arg(0) != NULL)
+          json = pServer->arg("plain");
+      } else if (pServer->args() == 1)
+      {
+          json = pServer->arg(0);
+      }
+      Serial.println(json);
+      deserializeJson(doc, json);
+      const char* channel = NULL;
+      const char* cmd = NULL;
+      const char* cmdArgs = NULL;
+      bool bRepeated = false;
+      if (doc.containsKey("channel"))
+      {
+          channel = doc["channel"];
+      }
+      if (doc.containsKey("cmd"))
+      {
+          cmd = doc["cmd"];
+      }
+      if (doc.containsKey("args"))
+      {
+          cmdArgs = doc["args"];
+      }
+      if (doc.containsKey("repeated"))
+      {
+          bRepeated = doc["repeated"];
+      }
+      processCommand(channel,cmd,cmdArgs);
+      pServer->send(200, "text/plain", "OK");
+      if (!bRepeated)
+      {
+          for (int i = 0;i < MdnsClientList_Count();i++)
           {
-              deserializeJson(doc, pServer->arg(0));
-              const char* channel = NULL;
-              const char* cmd = NULL;
-              const char* cmdArgs = NULL;
-              bool bRepeated = false;
-              if (doc.containsKey("channel"))
-              {
-                  channel = doc["channel"];
-              }
-              if (doc.containsKey("cmd"))
-              {
-                  cmd = doc["cmd"];
-              }
-              if (doc.containsKey("args"))
-              {
-                  cmdArgs = doc["args"];
-              }
-              if (doc.containsKey("repeated"))
-              {
-                  bRepeated = doc["repeated"];
-              }
-              processCommand(channel,cmd,cmdArgs);
+              sprintf(urlClient,"http://%s/api/cmd",MdnsClientList_GetIPString(i));
+              sprintf(jsonData,"{\"channel\":\"%s\",\"cmd\":\"%s\",\"args\":\"%s\",\"repeated\":\"true\"}",channel,cmd,cmdArgs);
+              httpClient.begin(client, urlClient);  // HTTP
+              httpClient.addHeader("Content-Type", "application/json");
+              httpClient.POST(jsonData);
+              httpClient.end();
           }
       }
   }

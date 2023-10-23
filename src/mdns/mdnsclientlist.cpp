@@ -82,7 +82,8 @@
 
 static stc_mdnsclientlist_item_t astcRemoteStations[MAX_REMOTE_STATIONS];
 static uint32_t millisOld = 0;
-const char* pstrCurrentService = NULL;
+static int count = 0;
+static const char* pstrCurrentService = NULL;
 
 /**
  *******************************************************************************
@@ -114,6 +115,7 @@ static void updateList(void)
         {
             n = MAX_REMOTE_STATIONS;
         }
+        count = n;
         memset(&astcRemoteStations[0],0,sizeof(astcRemoteStations));
         for (int i = 0; i < n; ++i) {
             strncpy(astcRemoteStations[i].ipAddress,MDNS.IP(i).toString().c_str(),18);
@@ -122,6 +124,16 @@ static void updateList(void)
     }
     Serial.println("done...");
 }
+
+int MdnsClientList_Count(void)
+{
+    return count;
+}
+const char* MdnsClientList_GetIPString(int i)
+{
+    return (const char*)astcRemoteStations[i].ipAddress;
+}
+
 
 void MdnsClientList_Init(const char* pstrService)
 {

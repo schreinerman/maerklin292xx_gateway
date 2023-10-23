@@ -92,6 +92,8 @@ typedef struct stc_mdnsclientlist_item
 
 void MdnsClientList_Init(const char* pstrService);
 void MdnsClientList_Update(void);
+int MdnsClientList_Count(void);
+const char* MdnsClientList_GetIPString(int i);
 
 //@} // MdnsClientListGroup
 

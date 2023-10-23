@@ -18,16 +18,40 @@
 
     <title>IR Train</title>
     <script>
-        function execcmd(cmd) {
+        function execcmd(cmd,args) {
             var addressElements = document.getElementsByName('tab-group-address');
             var selectedAddress;
-    
+            var cmdString='';
+
             for(var i = 0; i < addressElements.length; i++) {
                 if(addressElements[i].checked)
+                {
                     selectedAddress = addressElements[i].value;
+                }
             }
-    
-            fetch('/cmd/' + selectedAddress + '/' + cmd);
+        
+            cmdString='/cmd/' + selectedAddress + '/' + cmd;
+            if (typeof value !== 'undefined' && value) {
+                cmdString = cmdString + "/" + args;
+            };
+
+            var data = {
+                "channel":selectedAddress,
+                "cmd":cmd,
+                "args":args
+            };
+
+            if (typeof value === 'undefined' || ! value) {
+                data.arg = '';
+            };
+
+            //fetch(cmdString);
+
+            fetch("/api/cmd",
+            {
+                method: "POST",
+                body: JSON.stringify(data)
+            })
         }
         function requestFullScreen() {
             const _element = document.documentElement;
@@ -163,25 +187,25 @@
                 </p>
                 <br>
                 <p>
-                    <button onclick="execcmd('light')" style="width:24%">
+                    <button onclick="execcmd('light','')" style="width:24%">
                         <!-- car-light-high -->
                         <svg class=mdi-icon viewBox="0 0 24 24">
                             <path fill="currentColor" d="M13,4.8C9,4.8 9,19.2 13,19.2C17,19.2 22,16.5 22,12C22,7.5 17,4.8 13,4.8M13.1,17.2C12.7,16.8 12,15 12,12C12,9 12.7,7.2 13.1,6.8C16,6.9 20,8.7 20,12C20,15.3 16,17.1 13.1,17.2M2,5H9.5C9.3,5.4 9,5.8 8.9,6.4C8.8,6.6 8.8,6.8 8.7,7H2V5M8,11H2V9H8.2C8.1,9.6 8.1,10.3 8,11M8.7,17C8.9,17.8 9.2,18.4 9.6,19H2.1V17H8.7M8.2,15H2V13H8C8.1,13.7 8.1,14.4 8.2,15Z" />
                         </svg>
                     </button>
-                    <button onclick="execcmd('sound/1')" style="width:24%">
+                    <button onclick="execcmd('sound','1')" style="width:24%">
                         <!-- waveform -->
                         <svg class=mdi-icon viewBox="0 0 24 24">
                             <path fill="currentColor" d="M22 12L20 13L19 14L18 13L17 16L16 13L15 21L14 13L13 15L12 13L11 17L10 13L9 22L8 13L7 19L6 13L5 14L4 13L2 12L4 11L5 10L6 11L7 5L8 11L9 2L10 11L11 7L12 11L13 9L14 11L15 3L16 11L17 8L18 11L19 10L20 11L22 12Z" />
                         </svg>
                     </button>
-                    <button onclick="execcmd('sound/2')" style="width:24%">
+                    <button onclick="execcmd('sound','2')" style="width:24%">
                         <!-- bugle -->
                         <svg class=mdi-icon viewBox="0 0 24 24">
                             <path fill="currentColor" d="M21,6C21,11 12,11 12,11C12,11 6,11 5,11C4,11 3,10 3,10H2V14H3C3,14 4,13 5,13C5.2,13 5.7,13 6.3,13C5.5,13.5 5,14.2 5,15C5,16.8 7.3,18 10.5,18C13.7,18 16,16.8 16,15C16,14.4 15.7,13.8 15.2,13.3C17.8,13.8 21,15 21,18H22V6H21M10.5,16.7C8.2,16.7 6.4,15.9 6.4,15C6.4,14.1 8.2,13.3 10.5,13.3C12.8,13.3 14.6,14.1 14.6,15C14.6,15.9 12.8,16.7 10.5,16.7Z" />
                         </svg>
                     </button>
-                    <button onclick="execcmd('sound/3')" style="width:24%">
+                    <button onclick="execcmd('sound','3')" style="width:24%">
                         <!-- electric-switch -->
                         <svg class=mdi-icon viewBox="0 0 24 24">
                             <path fill="currentColor" d="M1,11H3.17C3.58,9.83 4.69,9 6,9C6.65,9 7.25,9.21 7.74,9.56L14.44,4.87L15.58,6.5L8.89,11.2C8.96,11.45 9,11.72 9,12A3,3 0 0,1 6,15C4.69,15 3.58,14.17 3.17,13H1V11M23,11V13H20.83C20.42,14.17 19.31,15 18,15A3,3 0 0,1 15,12A3,3 0 0,1 18,9C19.31,9 20.42,9.83 20.83,11H23M6,11A1,1 0 0,0 5,12A1,1 0 0,0 6,13A1,1 0 0,0 7,12A1,1 0 0,0 6,11M18,11A1,1 0 0,0 17,12A1,1 0 0,0 18,13A1,1 0 0,0 19,12A1,1 0 0,0 18,11Z" />
@@ -189,37 +213,37 @@
                     </button>
                 </p>
                 <p>
-                    <button onclick="execcmd('speed/-3')">
+                    <button onclick="execcmd('speed','-3')">
                         <!-- step-backward-2 -->
                         <svg class=mdi-icon viewBox="0 0 24 24">
                             <path fill="currentColor" d="M17,5H14V19H17V5M12,5L1,12L12,19V5M22,5H19V19H22V5Z" />
                         </svg>
                     </button>
-                    <button onclick="execcmd('speed/-2')">
+                    <button onclick="execcmd('speed','-2')">
                         <!-- step-backward -->
                         <svg class=mdi-icon viewBox="0 0 24 24">
                             <path fill="currentColor" d="M19,5V19H16V5M14,5V19L3,12" />
                         </svg>
                     </button>
-                    <button onclick="execcmd('speed/-1')">
+                    <button onclick="execcmd('speed','-1')">
                         <!-- play -->
                         <svg class=mdi-icon style="transform: rotate(180deg);" viewBox="0 0 -12 -12">
                             <path fill="currentColor" d="M8,5.14V19.14L19,12.14L8,5.14Z" />
                         </svg>
                     </button>
-                    <button onclick="execcmd('speed/1')">
+                    <button onclick="execcmd('speed','1')">
                         <!-- play -->
                         <svg class=mdi-icon viewBox="0 0 -12 -12">
                             <path fill="currentColor" d="M8,5.14V19.14L19,12.14L8,5.14Z" />
                         </svg>
                     </button>
-                    <button onclick="execcmd('speed/2')">
+                    <button onclick="execcmd('speed','2')">
                         <!-- step-forward -->
                         <svg class=mdi-icon viewBox="0 0 24 24">
                             <path fill="currentColor" d="M5,5V19H8V5M10,5V19L21,12" />
                         </svg>
                     </button>
-                    <button onclick="execcmd('speed/3')">
+                    <button onclick="execcmd('speed','3')">
                         <!-- step-forward-2 -->
                         <svg class=mdi-icon viewBox="0 0 24 24">
                             <path fill="currentColor" d="M7,5H10V19H7V5M12,5L23,12L12,19V5M2,5H5V19H2V5Z" />
@@ -227,7 +251,7 @@
                     </button>
                 </p>
                 <p> 
-                    <button onclick="execcmd('speed/0')" style="width:50%">
+                    <button onclick="execcmd('speed','0')" style="width:50%">
                         <!-- stop -->
                         <svg class=mdi-icon viewBox="0 0 24 24">
                             <path fill="currentColor" d="M18,18H6V6H18V18Z" />
