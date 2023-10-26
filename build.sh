@@ -15,7 +15,8 @@ case $1 in
             arduino-cli update
             pip3 install -r requirements.txt
             IFS_bak=$IFS
-            IFS='\n'
+            IFS='
+'
             for line in  $(cat requirements.txt)
             do
                 sudo apt-get install -yq python3-$line || true
@@ -35,7 +36,8 @@ case $1 in
             arduino-cli update
             pip3 install -r requirements.txt
             IFS_bak=$IFS
-            IFS='\n'
+            IFS='
+'
             for line in  $(cat requirements.txt)
             do
                 apt-get install -yq python3-$line || true
