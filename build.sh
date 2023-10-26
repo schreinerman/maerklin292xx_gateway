@@ -14,6 +14,13 @@ case $1 in
             arduino-cli config add board_manager.additional_urls "https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json"
             arduino-cli update
             pip3 install -r requirements.txt
+            IFS_bak=$IFS
+            IFS='\n'
+            for $line in cat requirements.txt
+            do
+                sudo apt-get install -yq python3-$line || true
+            done
+            IFS=$IFS_bak
             sudo chmod +x ./build.sh
         else
             apt-get update && apt-get install -yq curl wget bzip2 tar ca-certificates make python3 python3-pip 
@@ -27,6 +34,13 @@ case $1 in
             arduino-cli config add board_manager.additional_urls "https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json"
             arduino-cli update
             pip3 install -r requirements.txt
+            IFS_bak=$IFS
+            IFS='\n'
+            for $line in cat requirements.txt
+            do
+                apt-get install -yq python3-$line || true
+            done
+            IFS=$IFS_bak
             chmod +x ./build.sh
         fi
         ;;
