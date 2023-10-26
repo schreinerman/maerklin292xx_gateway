@@ -3,7 +3,8 @@
 import argparse
 import os, sys
 from io import open as iopen
-import imageio
+import imageio.v3 as iio
+import imageio as imageio
 from PIL import Image
 from pilkit.processors import ProcessorPipeline, ResizeToFit, SmartResize
 
@@ -46,8 +47,11 @@ def updateFavicon(originalImage, directory):
         )
         background = background.convert("P", palette=Image.ADAPTIVE, colors=256)
         background.save(os.path.join(directory ,size[0] + ".png"), optimize=True)
-
-    img = imageio.v2.imread(originalImage)
+    try:
+        img = iio.imread(originalImage)
+    except:
+        img = imageio.v2.imread(originalImage)
+        
     processor = ProcessorPipeline([ResizeToFit(48, 48)])
     result = processor.process(im)
     img = Image.new('RGBA', [48,48], (255, 255, 255, 0))
