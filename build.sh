@@ -16,7 +16,7 @@ case $1 in
             pip3 install -r requirements.txt
             IFS_bak=$IFS
             IFS='\n'
-            for line in cat requirements.txt
+            for line in  $(cat requirements.txt)
             do
                 sudo apt-get install -yq python3-$line || true
             done
@@ -36,7 +36,7 @@ case $1 in
             pip3 install -r requirements.txt
             IFS_bak=$IFS
             IFS='\n'
-            for line in cat requirements.txt
+            for line in  $(cat requirements.txt)
             do
                 apt-get install -yq python3-$line || true
             done
