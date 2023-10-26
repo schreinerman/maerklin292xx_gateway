@@ -2,4 +2,8 @@ htmlmin
 imageio
 Pillow
 pilkit
+serial
 pyocd
+rjsmin
+jsmin
+rcssmin
