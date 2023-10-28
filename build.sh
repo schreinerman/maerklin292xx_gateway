@@ -9,19 +9,23 @@ case $1 in
             SUDO_REQUIRED="sudo"
         fi
 
+        
+
         if [ "$(command -v "apt-get")" ]
         then
             $SUDO_REQUIRED apt-get update
             $SUDO_REQUIRED apt-get upgrade
-            $SUDO_REQUIRED apt-get install -yq $PACKAGES
+            PACKMAN_INSTALL="$SUDO_REQUIRED apt-get install -yq "
         elif [ "$(command -v "apk")" ]
         then
-            $SUDO_REQUIRED apk add $PACKAGES
+            PACKMAN_INSTALL="$SUDO_REQUIRED apk add "
         elif [ "$(command -v "brew")" ]
         then
             brew update
-            brew install $PACKAGES
+            PACKMAN_INSTALL="$SUDO_REQUIRED brew install "
         fi
+
+        $PACKMAN_INSTALL $PACKAGES
 
         curl "https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh" -o arduino-cli-install.sh
         $SUDO_REQUIRED bash -c "BINDIR=/usr/bin sh arduino-cli-install.sh"
@@ -35,16 +39,7 @@ case $1 in
         pip3 install -r requirements.txt
         for line in  $(cat requirements.txt | xargs)
         do
-            if [ "$(command -v "apt-get")" ]
-            then
-                $SUDO_REQUIRED apt-get install -yq python3-$line || true
-            elif [ "$(command -v "apk")" ]
-            then
-                $SUDO_REQUIRED apk add python3-$line
-            elif [ "$(command -v "brew")" ]
-            then
-                brew install python3-$line
-            fi
+            $PACKMAN_INSTALL python3-$line || true
         done
         $SUDO_REQUIRED chmod +x ./build.sh
         ;;
