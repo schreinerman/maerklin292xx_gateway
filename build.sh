@@ -11,12 +11,12 @@ case $1 in
 
         if [ "$(command -v "apt-get")" ]
         then
-            SUDO_REQUIRED apt-get update
-            SUDO_REQUIRED apt-get upgrade
-            SUDO_REQUIRED apt-get install -yq $PACKAGES
+            $SUDO_REQUIRED apt-get update
+            $SUDO_REQUIRED apt-get upgrade
+            $SUDO_REQUIRED apt-get install -yq $PACKAGES
         elif [ "$(command -v "apk")" ]
         then
-            SUDO_REQUIRED apk add $PACKAGES
+            $SUDO_REQUIRED apk add $PACKAGES
         elif [ "$(command -v "brew")" ]
         then
             brew update
@@ -24,7 +24,7 @@ case $1 in
         fi
 
         curl "https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh" -o arduino-cli-install.sh
-        SUDO_REQUIRED bash -c "BINDIR=/usr/bin sh arduino-cli-install.sh"
+        $SUDO_REQUIRED bash -c "BINDIR=/usr/bin sh arduino-cli-install.sh"
         mkdir ~/.arduino15
         touch ~/.arduino15/package_esp8266com_index.json
         arduino-cli config init
@@ -37,16 +37,16 @@ case $1 in
         do
             if [ "$(command -v "apt-get")" ]
             then
-                SUDO_REQUIRED apt-get install -yq python3-$line || true
+                $SUDO_REQUIRED apt-get install -yq python3-$line || true
             elif [ "$(command -v "apk")" ]
             then
-                SUDO_REQUIRED apk add python3-$line
+                $SUDO_REQUIRED apk add python3-$line
             elif [ "$(command -v "brew")" ]
             then
                 brew install python3-$line
             fi
         done
-        SUDO_REQUIRED chmod +x ./build.sh
+        $SUDO_REQUIRED chmod +x ./build.sh
         ;;
     "build")
         make all
