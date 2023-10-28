@@ -2,11 +2,11 @@
 case $1 in
     "prepare")
         PACKAGES="curl wget bzip2 tar ca-certificates make python3 python3-pip"
-        SUDO_REQUIRED="sudo"
+        SUDO_REQUIRED=""
 
         if [ "$(whoami)" != "root" ]
         then
-            SUDO_REQUIRED=""
+            SUDO_REQUIRED="sudo"
         fi
 
         if [ "$(command -v "apt-get")" ]
